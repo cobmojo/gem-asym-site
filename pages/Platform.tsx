@@ -1,128 +1,200 @@
 
 import React from 'react';
-import { Section, TechPanel, Reveal, Button, DitherGrid, SpotlightCard, DitherGlobe } from '../components/UI';
+import { Section, TechPanel, Reveal, Button, DitherGrid, SpotlightCard, DitherGlobe, ScrambleText } from '../components/UI';
 import { Link } from 'react-router-dom';
-import { Database, Layout, Globe, Shield, Zap, ArrowRight, Mail, FileText, PenTool, BarChart } from 'lucide-react';
+import { Database, Globe, Zap, Mail, FileText, PenTool, BarChart, Layout, Heart, Calendar, PlusCircle, ArrowRight, AlertTriangle, XCircle, CheckCircle, Layers, Split, Lock, Clock } from 'lucide-react';
 
 const Platform: React.FC = () => {
   return (
-    <div className="pt-24 min-h-screen bg-black text-white overflow-hidden">
+    <div className="pt-24 min-h-screen bg-black text-white overflow-hidden selection:bg-white selection:text-black">
       
       {/* Hero / Value Prop */}
-      <Section className="border-b border-border relative">
+      <Section className="border-b border-white/5 relative">
+        <DitherGrid />
+        
         {/* Offset Globe in background */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-40 pointer-events-none hidden lg:block">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-30 pointer-events-none hidden lg:block grayscale">
             <DitherGlobe scale={1.5} />
         </div>
 
         <Reveal>
-            <span className="font-mono text-xs text-muted uppercase tracking-widest mb-4 block">Mission Control v1.0</span>
-            <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-8 tracking-tight leading-[0.9]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/10 bg-white/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-muted mb-8 backdrop-blur-md">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <ScrambleText text="MISSION OPERATING SYSTEM" delay={200} />
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-8 tracking-tighter leading-[0.9]">
                 One Surface.<br /> 
-                <span className="text-muted">Zero Friction.</span>
+                <span className="text-muted">Total Clarity.</span>
             </h1>
-            <p className="text-xl text-muted max-w-3xl font-light leading-relaxed mb-12 text-balance">
-                Mission focused organizations are forced into a false choice: outdated all-in-one platforms or a brittle, pieced-together stack.
+            <p className="text-xl text-gray-400 max-w-2xl font-light leading-relaxed mb-12 text-balance border-l border-white/10 pl-6">
+                Most agencies are running on a patchwork of disconnected tools. Data is siloed. Staff are exhausted. The mission slows down.
                 <br/><br/>
-                Asymmetric.al is the third option. A unified operating system where identity, data, and automation live in one kernel.
+                Asymmetric.al replaces the chaos of the "DIY stack" with a single, unified operating system designed specifically for the complexities of sending.
             </p>
-            <div className="flex gap-6">
+            <div className="flex flex-wrap gap-6">
                 <Link to="/specs"><Button>System Architecture</Button></Link>
                 <Link to="/missions"><Button variant="secondary">Role Views</Button></Link>
             </div>
         </Reveal>
       </Section>
 
-      {/* The Problem */}
-      <Section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+      {/* The Problem: Audit View */}
+      <Section className="bg-red-900/[0.02]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <Reveal>
-                <h3 className="text-white font-display text-3xl mb-6">The Fractured Stack</h3>
-                <p className="text-muted leading-relaxed mb-6 text-balance">
-                    In the "DIY" model, data is copied by hand. Staff juggle multiple logins. APIs don't line up.
-                    Operators spend time moving files and fixing sync issues instead of serving people.
+                <div className="flex items-center gap-2 text-red-500 mb-4">
+                    <ActivityIcon />
+                    <span className="font-mono text-xs uppercase tracking-widest">Legacy Architecture Audit</span>
+                </div>
+                <h3 className="text-white font-display font-bold text-4xl mb-6 tracking-tight">The False Choice: Chaos or Stagnation.</h3>
+                <p className="text-gray-400 leading-relaxed mb-8 text-balance">
+                    Agencies are typically forced to choose between two failing options.
+                    <br/><br/>
+                    <strong>Option A: The Chaos of DIY.</strong> Juggling disconnected tools that degrade data and force staff into endless manual entry.
+                    <br/><br/>
+                    <strong>Option B: The Prison of Legacy.</strong> "Unified" platforms that are proprietary, locked down, and decades out of date. Making simple changes requires expensive contracts, holding your mission velocity hostage to their slow roadmap.
                 </p>
-                <ul className="space-y-4 font-mono text-xs text-muted uppercase tracking-widest">
-                    <li className="flex items-center gap-2 text-red-400"><span className="w-1 h-1 bg-red-400"></span> Month-end close drift</li>
-                    <li className="flex items-center gap-2 text-red-400"><span className="w-1 h-1 bg-red-400"></span> Donor drop-off at checkout</li>
-                    <li className="flex items-center gap-2 text-red-400"><span className="w-1 h-1 bg-red-400"></span> Security gaps in plugins</li>
-                </ul>
+                <div className="space-y-4">
+                    {[
+                        "Fragmented Data Silos (DIY Stack)",
+                        "Proprietary Vendor Lock-in (Legacy Monoliths)",
+                        "Outdated UX & High Technical Debt"
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 text-red-400/80 font-mono text-xs uppercase tracking-wider">
+                             <XCircle size={14} /> {item}
+                        </div>
+                    ))}
+                </div>
             </Reveal>
-            <Reveal delay={200}>
-                <TechPanel title="Legacy State" className="h-full bg-red-900/5 border-red-900/20">
-                    <div className="grid grid-cols-2 gap-4 opacity-50 pointer-events-none">
-                        <div className="border border-dashed border-red-800 p-4 text-xs font-mono text-red-800 text-center">Spreadsheets</div>
-                        <div className="border border-dashed border-red-800 p-4 text-xs font-mono text-red-800 text-center">Manual Mailchimp</div>
-                        <div className="border border-dashed border-red-800 p-4 text-xs font-mono text-red-800 text-center">Brittle Zapier</div>
-                        <div className="border border-dashed border-red-800 p-4 text-xs font-mono text-red-800 text-center">Offline Checks</div>
+            
+            <Reveal delay={200} className="h-full">
+                <TechPanel title="DIAGNOSTIC: CRITICAL SYSTEM ALERTS" className="h-full bg-black border-red-500/20">
+                    <div className="grid grid-cols-2 gap-px bg-red-900/20 border border-red-900/20 opacity-60">
+                         {[
+                            { label: "Data Silos", icon: Split }, 
+                            { label: "Vendor Lock", icon: Lock }, 
+                            { label: "Legacy Debt", icon: Clock }, 
+                            { label: "Sync Error", icon: AlertTriangle }
+                         ].map((item, i) => (
+                             <div key={i} className="aspect-square flex flex-col items-center justify-center p-4 bg-black/80 hover:bg-red-900/10 transition-colors group">
+                                 <item.icon className="text-red-700 mb-2 group-hover:text-red-500 transition-colors" size={24} strokeWidth={1.5} />
+                                 <span className="text-[10px] font-mono text-red-700 uppercase text-center group-hover:text-red-400 transition-colors">{item.label}</span>
+                             </div>
+                         ))}
                     </div>
                 </TechPanel>
             </Reveal>
         </div>
       </Section>
 
-      {/* Mission Control Tiles */}
-      <Section grid className="bg-offblack/30">
+      {/* Mission Control Grid */}
+      <Section grid className="bg-black relative">
         <Reveal>
-            <div className="mb-16">
-                <h2 className="text-4xl font-display font-bold text-white mb-4">Mission Control Modules</h2>
-                <p className="text-muted">Role-aware tiles. Every operational function under one login.</p>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-white/10 pb-8">
+                <div>
+                    <h2 className="text-5xl font-display font-bold text-white mb-4 tracking-tighter">Mission Control</h2>
+                    <p className="text-gray-400 max-w-md text-balance">
+                        Replace the clutter with cohesion. Every operational function under one login, sharing one database.
+                    </p>
+                </div>
+                <div className="hidden md:flex items-center gap-2 text-emerald-500 font-mono text-xs uppercase tracking-widest mt-4 md:mt-0">
+                    <CheckCircle size={14} /> Unified Kernel
+                </div>
             </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {[
                 { 
                     title: "Partners CRM", 
-                    desc: "Single source for people, churches, pledges. The living center of relationships.",
-                    icon: Database 
+                    desc: "The single source of truth. People, churches, and pledges in one living record.",
+                    icon: Database,
+                    meta: "// CORE RECORD"
                 },
                 { 
                     title: "Contributions Hub", 
-                    desc: "Live feed of transactions. Filter recurring gifts, returns, and enter offline checks.",
-                    icon: Zap 
+                    desc: "Live transaction feed. Automate reconciliation and eliminate manual entry.",
+                    icon: Zap,
+                    meta: "// FINANCE"
                 },
                 { 
                     title: "Web Studio", 
-                    desc: "Manage headless sites and missionary pages without coding. See visitor engagement.",
-                    icon: Globe 
+                    desc: "Manage headless sites and missionary pages without code. Connected directly to CRM.",
+                    icon: Globe,
+                    meta: "// CMS"
                 },
                 { 
                     title: "Email Studio", 
-                    desc: "Branded Unlayer templates with verified domains. Track delivery and bounces.",
-                    icon: Mail 
+                    desc: "Send branded, authenticated campaigns. No more exporting lists to Mailchimp.",
+                    icon: Mail,
+                    meta: "// COMMS"
                 },
                 { 
                     title: "Statements Studio", 
-                    desc: "Official documents via Gotenberg. Receipt packs and year-end PDFs.",
-                    icon: FileText 
+                    desc: "Generate receipt packs and year-end tax documents automatically.",
+                    icon: FileText,
+                    meta: "// COMPLIANCE"
                 },
                 { 
                     title: "Sign Studio", 
-                    desc: "Integrated e-signature via Documenso. Build packets and track routing.",
-                    icon: PenTool 
+                    desc: "Integrated e-signature. Build packets and track routing for agreements.",
+                    icon: PenTool,
+                    meta: "// LEGAL"
                 },
                 { 
                     title: "Mobilize", 
-                    desc: "Applicant intake to deployment. Manage checklists and references.",
-                    icon: ArrowRight 
+                    desc: "Accelerate deployment. Move candidates from interest to field with clear steps.",
+                    icon: ArrowRight,
+                    meta: "// HR FLOW"
                 },
                 { 
                     title: "Report Studio", 
-                    desc: "Explore data via ECharts. Schedule CSV/PDF delivery via Automations.",
-                    icon: BarChart 
+                    desc: "Real-time visibility. Schedule reports for leadership without SQL knowledge.",
+                    icon: BarChart,
+                    meta: "// INTELLIGENCE"
                 },
                 { 
                     title: "Automations", 
-                    desc: "Embedded Zapier hub. Create flows for donation runs and syncs.",
-                    icon: Layout 
+                    desc: "Embedded workflow engine. Trigger actions based on donations or applications.",
+                    icon: Layout,
+                    meta: "// LOGIC"
+                },
+                {
+                    title: "Member Care",
+                    desc: "Track health and milestones. Sustain your workers with intentional care.",
+                    icon: Heart,
+                    meta: "// RETENTION"
+                },
+                {
+                    title: "Events & Gatherings",
+                    desc: "Centralized registration and logistics. Connect attendees to your CRM instantly.",
+                    icon: Calendar,
+                    meta: "// LOGISTICS"
+                },
+                {
+                    title: "Roadmap Active",
+                    desc: "The OS is alive. We are continuously deploying new modules to serve the field.",
+                    icon: PlusCircle,
+                    meta: "// FUTURE",
+                    highlight: true
                 }
              ].map((tile, i) => (
                  <Reveal key={i} delay={i * 50} className="h-full">
-                    <SpotlightCard className="p-8 h-full">
-                        <tile.icon className="text-muted mb-6 group-hover:text-white transition-colors" size={24} strokeWidth={1} />
-                        <h3 className="text-lg font-display font-bold text-white mb-2">{tile.title}</h3>
-                        <p className="text-sm text-muted leading-relaxed">{tile.desc}</p>
+                    <SpotlightCard className={`p-8 h-full flex flex-col justify-between group ${tile.highlight ? 'border-dashed border-white/20' : ''}`}>
+                        <div>
+                            <div className="flex justify-between items-start mb-8">
+                                <tile.icon className={`${tile.highlight ? 'text-white' : 'text-gray-500'} group-hover:text-white transition-colors`} size={28} strokeWidth={1} />
+                                <span className="font-mono text-[9px] text-gray-600 uppercase tracking-widest">{tile.meta}</span>
+                            </div>
+                            <h3 className="text-xl font-display font-bold text-white mb-3 tracking-tight">{tile.title}</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed text-balance">{tile.desc}</p>
+                        </div>
+                        {tile.highlight && (
+                            <div className="mt-8 pt-4 border-t border-white/10">
+                                <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest animate-pulse">In Development</span>
+                            </div>
+                        )}
                     </SpotlightCard>
                  </Reveal>
              ))}
@@ -131,5 +203,13 @@ const Platform: React.FC = () => {
     </div>
   );
 };
+
+function ActivityIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+    );
+}
 
 export default Platform;

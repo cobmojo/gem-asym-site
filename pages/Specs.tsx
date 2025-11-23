@@ -1,120 +1,200 @@
 
 import React from 'react';
-import { Section, Reveal, TechPanel, Button } from '../components/UI';
-import { CheckCircle2 } from 'lucide-react';
+import { Section, Reveal, SpotlightCard, DitherGrid } from '../components/UI';
+import { 
+    Layout, 
+    Server, 
+    Database, 
+    Globe, 
+    Box, 
+    Cloud, 
+    Shield, 
+    Zap, 
+    PenTool,
+    Terminal,
+    Cpu
+} from 'lucide-react';
+
+interface StackCategory {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+    description: string;
+    items: string[];
+}
+
+const STACK_DATA: StackCategory[] = [
+    {
+        id: "languages",
+        label: "Languages & Core",
+        icon: CodeIcon,
+        description: "The primitives we build with.",
+        items: ["TypeScript", "JavaScript", "React", "Next.js", "Node.js", "NestJS", "GraphQL", "TanStack"]
+    },
+    {
+        id: "data",
+        label: "Data Persistence",
+        icon: Database,
+        description: "Polyglot storage layer.",
+        items: ["PostgreSQL", "Amazon Aurora MySQL", "Redis", "TanStack DB", "pgvector", "TanStack Query", "TanStack Table"]
+    },
+    {
+        id: "mission-control",
+        label: "Mission Control Modules",
+        icon: Box,
+        description: "Core application domains.",
+        items: ["Twenty CRM", "Documenso CE", "Chatwoot CE"]
+    },
+    {
+        id: "cms",
+        label: "Content Engine",
+        icon: Globe,
+        description: "Headless publishing pipeline.",
+        items: ["WordPress (Headless)", "Gutenberg", "Faust.js", "WPGraphQL", "Gotenberg (chromium-based)", "Unlayer"]
+    },
+    {
+        id: "infra",
+        label: "Infrastructure & Ops",
+        icon: Cloud,
+        description: "Edge delivery and observability.",
+        items: ["Vercel", "AWS", "Docker", "GitHub", "Sentry", "OpenTelemetry"]
+    },
+    {
+        id: "security",
+        label: "Identity & Security",
+        icon: Shield,
+        description: "Auth, secrets, and keys.",
+        items: ["Keycloak", "Unkey", "Infisical"]
+    },
+    {
+        id: "integrations",
+        label: "Integrations & Async",
+        icon: Zap,
+        description: "External services and queues.",
+        items: ["Stripe", "SendGrid", "Zapier", "Inngest", "BullMQ"]
+    },
+    {
+        id: "ui",
+        label: "Interface & Design",
+        icon: PenTool,
+        description: "Design system and tooling.",
+        items: ["shadcn/ui", "Recharts", "Figma"]
+    },
+    {
+        id: "ai",
+        label: "Intelligence",
+        icon: Cpu,
+        description: "Generative capabilities.",
+        items: ["OpenAI"]
+    }
+];
+
+// Simple internal icon wrapper to avoid import errors if specific icons are missing in environment
+function CodeIcon(props: any) {
+    return <Terminal {...props} />;
+}
 
 const Specs: React.FC = () => {
   return (
-    <div className="pt-24 min-h-screen bg-black text-white">
+    <div className="pt-24 min-h-screen bg-black text-white selection:bg-white selection:text-black">
+      <DitherGrid />
       
-      <Section>
+      {/* Header */}
+      <Section className="relative z-10">
         <Reveal>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                <h1 className="text-4xl md:text-6xl font-display font-bold text-white">System Specifications</h1>
-                <span className="font-mono text-xs text-muted uppercase tracking-widest mb-2">Ref: White Paper Oct 2025</span>
+            <div className="max-w-5xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/10 bg-white/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-muted mb-8 backdrop-blur-md">
+                    <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Tech Stack Manifest v1.0
+                </div>
+                <h1 className="text-6xl md:text-9xl font-display font-bold text-white mb-8 tracking-tighter leading-[0.9]">
+                    The<br/>Architecture.
+                </h1>
+                <p className="text-xl text-muted font-light max-w-2xl leading-relaxed text-balance border-l border-white/20 pl-6">
+                    We don't hide our choices. We build on a foundation of best-in-class open source technologies and proven cloud primitives.
+                    This is the engine room of Asymmetric.al.
+                </p>
             </div>
         </Reveal>
-        
-        {/* Stack Matrix */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
-            <Reveal delay={100}>
-                <TechPanel title="Core Architecture" noBorder className="bg-transparent p-0">
-                    <table className="w-full text-left border-collapse">
-                        <tbody>
-                            {[
-                                ["UI Spine", "Twenty CRM (System of Record)"],
-                                ["Sites / Portals", "Headless WordPress (Open Source)"],
-                                ["Identity", "Keycloak (Tenant-safe OIDC)"],
-                                ["Payments", "Stripe Connect (Card/ACH)"],
-                                ["Email Design", "Unlayer (White-labeled)"],
-                                ["PDF Engine", "Gotenberg (Server-side Chromium)"],
-                                ["E-Signature", "Documenso Community Edition"],
-                                ["Charts", "Apache ECharts"],
-                                ["Automation", "Zapier (Tenant-owned / Embedded)"],
-                            ].map(([key, val], i) => (
-                                <tr key={i} className="border-b border-border hover:bg-white/5 transition-colors">
-                                    <td className="py-4 font-mono text-xs text-muted uppercase tracking-widest w-1/3">{key}</td>
-                                    <td className="py-4 font-mono text-sm text-white">{val}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </TechPanel>
-            </Reveal>
+      </Section>
 
-            <Reveal delay={200}>
-                <TechPanel title="Security & Compliance" className="bg-offblack/30 h-full">
-                    <ul className="space-y-6">
+      {/* The Stack Grid */}
+      <Section grid className="bg-white/[0.02] border-y border-white/5">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+            {STACK_DATA.map((category, i) => (
+                <Reveal key={category.id} delay={i * 50} className="h-full">
+                    <SpotlightCard className="h-full p-8 bg-black/50 border-white/5 group hover:border-white/20 transition-colors backdrop-blur-sm">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="p-3 bg-white/5 rounded border border-white/10 text-white group-hover:text-emerald-400 transition-colors">
+                                <category.icon size={20} />
+                            </div>
+                            <div>
+                                <h3 className="font-display font-bold text-xl text-white tracking-tight">{category.label}</h3>
+                                <p className="text-[10px] text-muted font-mono uppercase tracking-widest">{category.description}</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                            {category.items.map((item, idx) => (
+                                <span 
+                                    key={idx} 
+                                    className="inline-flex px-3 py-1.5 text-[11px] font-mono text-gray-400 bg-white/[0.03] border border-white/5 rounded hover:text-white hover:border-white/30 hover:bg-white/10 transition-all cursor-default select-none"
+                                >
+                                    {item}
+                                </span>
+                            ))}
+                        </div>
+                    </SpotlightCard>
+                </Reveal>
+            ))}
+         </div>
+      </Section>
+
+      {/* System Quality Targets */}
+      <Section>
+         <Reveal>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10">
+                <div className="bg-black p-12">
+                    <h2 className="text-3xl font-display font-bold text-white mb-8">Performance Standards</h2>
+                    <div className="grid grid-cols-2 gap-8">
                         {[
-                            { t: "Least Privilege", d: "Roles named by action. Scoped machine keys. Short-lived sessions." },
-                            { t: "Tenant Isolation", d: "Data partitioned at every layer. No cross-tenant read path." },
-                            { t: "Transport Security", d: "HTTP/3 + QUIC at edge. HSTS. Public clients use PKCE." },
-                            { t: "Privacy by Design", d: "Assistants opt-out of training. Sensitive fields masked." },
-                            { t: "Ownership", d: "Tenant owns Zapier/SendGrid keys. Full data export supported." }
-                        ].map((item, i) => (
-                            <li key={i} className="flex gap-4">
-                                <CheckCircle2 size={16} className="text-white mt-1 flex-shrink-0" />
-                                <div>
-                                    <strong className="text-white font-mono text-xs uppercase block mb-1">{item.t}</strong>
-                                    <span className="text-muted text-sm leading-relaxed">{item.d}</span>
-                                </div>
+                             { k: "Edge Protocol", v: "HTTP/3 + QUIC" },
+                             { k: "API Read Latency", v: "< 150ms (p50)" },
+                             { k: "API Write Latency", v: "< 600ms (p95)" },
+                             { k: "Core Web Vitals", v: "75th % Pass" },
+                             { k: "Availability", v: "99.9% SLO" },
+                             { k: "Render Start", v: "~1.0s Global" },
+                        ].map((s, i) => (
+                            <div key={i}>
+                                <div className="text-[10px] font-mono text-muted uppercase tracking-widest mb-1">{s.k}</div>
+                                <div className="text-xl font-bold text-white font-display">{s.v}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="bg-black p-12">
+                     <h2 className="text-3xl font-display font-bold text-white mb-8">Release Gates</h2>
+                     <ul className="space-y-4">
+                        {[
+                            "Statement Studio totals match source gifts",
+                            "Reconciliation ties Stripe payouts to journals",
+                            "SPF, DKIM, DMARC green across tenants",
+                            "Secrets scan verified clean (Infisical)",
+                            "PII masking verified in OpenTelemetry logs",
+                            "Zapier flows verified idempotent",
+                            "Two-step donor recovery paths verified"
+                        ].map((gate, i) => (
+                            <li key={i} className="flex gap-3 items-start text-sm text-gray-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-white/20 mt-1.5 flex-shrink-0"></span>
+                                {gate}
                             </li>
                         ))}
-                    </ul>
-                </TechPanel>
-            </Reveal>
-        </div>
-      </Section>
-
-      {/* Performance Targets */}
-      <Section grid className="border-t border-border bg-white/[0.02]">
-        <div className="max-w-4xl mx-auto">
-            <Reveal>
-                <h2 className="text-3xl font-display font-bold text-white mb-8">Performance Objectives</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[
-                        { label: "API Latency (Read)", val: "< 150ms", meta: "p50 within region" },
-                        { label: "API Latency (Write)", val: "< 600ms", meta: "p95 common writes" },
-                        { label: "Core Web Vitals", val: "75th %", meta: "Pass on LCP/INP/CLS" },
-                        { label: "Edge Protocol", val: "HTTP/3", meta: "With QUIC fallback" },
-                        { label: "Render Start", val: "~1.0s", meta: "Typical broadband" },
-                        { label: "Availability", val: "99.9%", meta: "SLO per module" },
-                    ].map((stat, i) => (
-                        <div key={i} className="bg-black border border-border p-6">
-                            <div className="text-muted font-mono text-xs uppercase tracking-widest mb-2">{stat.label}</div>
-                            <div className="text-3xl font-display font-bold text-white mb-1">{stat.val}</div>
-                            <div className="text-muted text-xs">{stat.meta}</div>
-                        </div>
-                    ))}
-                </div>
-            </Reveal>
-        </div>
-      </Section>
-      
-      {/* Acceptance Criteria */}
-      <Section>
-        <Reveal>
-            <div className="bg-offblack border border-border p-8 md:p-12">
-                <h3 className="font-display text-2xl text-white mb-6">Release Quality Gates</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-muted leading-relaxed">
-                    <div>
-                        <strong className="text-white block mb-2 font-mono text-xs uppercase">Financial Accuracy</strong>
-                        <p className="mb-4">Statement Studio totals match source gifts in controlled samples. Reconciliation screens tie Stripe payouts to journals with zero variance.</p>
-                        
-                        <strong className="text-white block mb-2 font-mono text-xs uppercase">Deliverability</strong>
-                        <p>SPF, DKIM, DMARC, and link branding validated green. Test sends verified for appearance and headers.</p>
-                    </div>
-                    <div>
-                        <strong className="text-white block mb-2 font-mono text-xs uppercase">Safety</strong>
-                        <p className="mb-4">Secrets never in code. PII masking verified in logs. Access checks run for Staff, Missionary, and Donor roles.</p>
-
-                        <strong className="text-white block mb-2 font-mono text-xs uppercase">Recovery</strong>
-                        <p>Two-step donor recovery from dunning emails verified. Zapier flows run idempotently.</p>
-                    </div>
+                     </ul>
                 </div>
             </div>
-        </Reveal>
+         </Reveal>
       </Section>
+
     </div>
   );
 };

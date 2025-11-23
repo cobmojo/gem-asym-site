@@ -12,6 +12,42 @@ export const Logo: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }
   </svg>
 );
 
+// --- Scramble Text ---
+export const ScrambleText: React.FC<{ text: string; className?: string; delay?: number }> = ({ text, className = "", delay = 0 }) => {
+  const [display, setDisplay] = useState(text);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#@$";
+  
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    let iteration = 0;
+    
+    const startScramble = () => {
+      const interval = setInterval(() => {
+        setDisplay(
+          text
+            .split("")
+            .map((letter, index) => {
+              if (index < iteration) return text[index];
+              return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join("")
+        );
+        
+        if (iteration >= text.length) {
+          clearInterval(interval);
+        }
+        
+        iteration += 1 / 3;
+      }, 30);
+    };
+
+    timeout = setTimeout(startScramble, delay);
+    return () => clearTimeout(timeout);
+  }, [text, delay]);
+
+  return <span className={`font-mono ${className}`}>{display}</span>;
+};
+
 // --- Container ---
 export const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
   <div className={`max-w-[1280px] mx-auto px-6 md:px-12 ${className}`}>
@@ -271,9 +307,8 @@ export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = ({ 
       <div className="absolute left-0 top-1/2 -translate-x-12 -translate-y-1/2 text-white/20 z-0"><Plus size={16} /></div>
       <div className="absolute right-0 top-1/2 translate-x-12 -translate-y-1/2 text-white/20 z-0"><Plus size={16} /></div>
       
-      {/* Decorative Horizontal Line */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-0"></div>
-
+      {/* Decorative Horizontal Line REMOVED for clarity per user request */}
+      
     </div>
   );
 };

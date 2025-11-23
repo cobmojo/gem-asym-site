@@ -150,8 +150,8 @@ export const Footer: React.FC = () => {
             <div>
                 <h4 className="font-mono text-[10px] uppercase tracking-widest text-white mb-8 border-b border-white/10 pb-2 inline-block">03 // Legal</h4>
                 <ul className="space-y-4 text-sm font-mono text-muted">
-                    <li><span className="cursor-pointer hover:text-white transition-colors">Privacy Policy</span></li>
-                    <li><span className="cursor-pointer hover:text-white transition-colors">Terms of Service</span></li>
+                    <li><Link to="/privacy" className="cursor-pointer hover:text-white transition-colors">Privacy Policy</Link></li>
+                    <li><Link to="/terms" className="cursor-pointer hover:text-white transition-colors">Terms of Service</Link></li>
                     <li><span className="cursor-pointer hover:text-white transition-colors">501(c)(3) Disclosure</span></li>
                 </ul>
             </div>
@@ -181,4 +181,3 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
-    

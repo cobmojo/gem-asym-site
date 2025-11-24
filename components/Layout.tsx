@@ -163,6 +163,7 @@ export const Footer: React.FC = () => {
                     <FooterLink to="/product">Mission Control</FooterLink>
                     <FooterLink to="/specs">System Specs</FooterLink>
                     <FooterLink to="/manifesto">Philosophy</FooterLink>
+                    <FooterLink to="/faith">Statement of Faith</FooterLink>
                 </ul>
             </div>
 

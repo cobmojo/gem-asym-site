@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Section, Reveal, GridPattern, ScrambleText, Container, DitherGlobe } from '../components/UI';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 const Manifesto: React.FC = () => {
   return (
@@ -111,6 +113,13 @@ const Manifesto: React.FC = () => {
                 <p className="text-2xl md:text-4xl font-display font-medium text-white leading-tight mb-12 text-balance">
                     We speak like practitioners. We do not posture. We acknowledge limits. We build open source because truth should be transparent.
                 </p>
+                
+                <div className="mb-12">
+                    <Link to="/faith" className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-muted hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 group">
+                        Read our Statement of Faith <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
+
                 <div className="inline-block border border-white/20 px-8 py-4 bg-white/[0.02]">
                     <p className="font-mono text-xs text-muted uppercase tracking-widest">
                         Signed,<br/>

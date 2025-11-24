@@ -13,6 +13,7 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Join from './pages/Join';
 import Disclosure from './pages/Disclosure';
+import Faith from './pages/Faith';
 import NotFound from './pages/NotFound';
 
 // Scroll to top helper
@@ -37,6 +38,7 @@ const App: React.FC = () => {
             <Route path="/missions" element={<Missions />} />
             <Route path="/specs" element={<Specs />} />
             <Route path="/manifesto" element={<Manifesto />} />
+            <Route path="/faith" element={<Faith />} />
             <Route path="/give" element={<Give />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/join" element={<Join />} />

@@ -25,12 +25,17 @@ import {
 
 // --- Types ---
 
+interface StackItem {
+    readonly label: string;
+    readonly url: string;
+}
+
 interface StackCategory {
     readonly id: string;
     readonly label: string;
     readonly icon: LucideIcon;
     readonly description: string;
-    readonly items: readonly string[];
+    readonly items: readonly StackItem[];
     readonly meta: string;
 }
 
@@ -60,7 +65,16 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Terminal,
         description: "The primitives we build with.",
         meta: "LAYER 01",
-        items: ["TypeScript", "JavaScript", "React", "Next.js", "Node.js", "NestJS", "GraphQL", "TanStack"]
+        items: [
+            { label: "TypeScript", url: "https://github.com/microsoft/TypeScript" },
+            { label: "JavaScript", url: "https://javascript.tm/" },
+            { label: "React", url: "https://github.com/facebook/react" },
+            { label: "Next.js", url: "https://github.com/vercel/next.js" },
+            { label: "Node.js", url: "https://github.com/nodejs" },
+            { label: "NestJS", url: "https://github.com/nestjs/nest" },
+            { label: "GraphQL", url: "https://graphql.org/" },
+            { label: "TanStack", url: "https://github.com/tanstack" }
+        ]
     },
     {
         id: "data",
@@ -68,7 +82,14 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Database,
         description: "Polyglot storage layer.",
         meta: "LAYER 02",
-        items: ["PostgreSQL", "Amazon Aurora MySQL", "Redis", "TanStack DB", "pgvector", "TanStack Query/Table"]
+        items: [
+            { label: "PostgreSQL", url: "https://www.postgresql.org/" },
+            { label: "MySQL", url: "https://www.mysql.com/" },
+            { label: "Redis", url: "https://github.com/redis/redis/" },
+            { label: "TanStack DB", url: "https://github.com/TanStack/db" },
+            { label: "pgvector", url: "https://github.com/pgvector/pgvector" },
+            { label: "TanStack Query", url: "https://tanstack.com/query/latest" }
+        ]
     },
     {
         id: "modules",
@@ -76,7 +97,11 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Box,
         description: "Core application domains.",
         meta: "LAYER 03",
-        items: ["Twenty CRM", "Documenso CE", "Chatwoot CE"]
+        items: [
+            { label: "Twenty CRM", url: "https://github.com/twentyhq/twenty" },
+            { label: "Documenso CE", url: "https://github.com/documenso/documenso" },
+            { label: "Chatwoot CE", url: "https://github.com/chatwoot/chatwoot" }
+        ]
     },
     {
         id: "cms",
@@ -84,7 +109,14 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Globe,
         description: "Headless publishing pipeline.",
         meta: "LAYER 04",
-        items: ["WordPress (Headless)", "Gutenberg", "Faust.js", "WPGraphQL", "Gotenberg (chromium-based)", "Unlayer"]
+        items: [
+            { label: "WordPress (Headless)", url: "https://wordpress.org/" },
+            { label: "Gutenberg", url: "https://github.com/WordPress/gutenberg" },
+            { label: "Faust.js", url: "https://github.com/wpengine/faustjs" },
+            { label: "WPGraphQL", url: "https://github.com/wp-graphql/wp-graphql" },
+            { label: "Gotenberg", url: "https://github.com/gotenberg/gotenberg" },
+            { label: "Unlayer", url: "https://unlayer.com/" }
+        ]
     },
     {
         id: "infra",
@@ -92,7 +124,14 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Cloud,
         description: "Edge delivery and observability.",
         meta: "LAYER 05",
-        items: ["Vercel", "AWS", "Docker", "GitHub", "Sentry", "OpenTelemetry"]
+        items: [
+            { label: "Vercel", url: "https://vercel.com/" },
+            { label: "AWS", url: "https://aws.amazon.com/" },
+            { label: "Docker", url: "https://github.com/docker" },
+            { label: "GitHub", url: "https://github.com/" },
+            { label: "Sentry", url: "https://github.com/getsentry/sentry" },
+            { label: "OpenTelemetry", url: "https://github.com/open-telemetry" }
+        ]
     },
     {
         id: "security",
@@ -100,7 +139,11 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Shield,
         description: "Auth, secrets, and keys.",
         meta: "LAYER 06",
-        items: ["Keycloak", "Unkey", "Infisical"]
+        items: [
+            { label: "Keycloak", url: "https://github.com/keycloak/keycloak" },
+            { label: "Unkey", url: "https://github.com/unkeyed/unkey" },
+            { label: "Infisical", url: "https://github.com/Infisical/infisical" }
+        ]
     },
     {
         id: "async",
@@ -108,7 +151,13 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Zap,
         description: "External services and queues.",
         meta: "LAYER 07",
-        items: ["Stripe", "SendGrid", "Zapier", "Inngest", "BullMQ"]
+        items: [
+            { label: "Stripe", url: "https://stripe.com/" },
+            { label: "SendGrid", url: "https://sendgrid.com/" },
+            { label: "Zapier", url: "https://zapier.com/" },
+            { label: "Inngest", url: "https://github.com/inngest/inngest" },
+            { label: "BullMQ", url: "https://github.com/taskforcesh/bullmq" }
+        ]
     },
     {
         id: "design",
@@ -116,7 +165,11 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: PenTool,
         description: "Design system and tooling.",
         meta: "LAYER 08",
-        items: ["shadcn/ui", "Recharts", "Figma"]
+        items: [
+            { label: "shadcn/ui", url: "https://ui.shadcn.com/" },
+            { label: "Recharts", url: "https://recharts.org/" },
+            { label: "Figma", url: "https://www.figma.com/" }
+        ]
     },
     {
         id: "ai",
@@ -124,7 +177,9 @@ const STACK_DATA: readonly StackCategory[] = [
         icon: Cpu,
         description: "Generative capabilities.",
         meta: "LAYER 09",
-        items: ["OpenAI"]
+        items: [
+            { label: "OpenAI", url: "https://openai.com/" }
+        ]
     }
 ] as const;
 
@@ -184,12 +239,15 @@ const StackCard = memo(({ category }: StackCardProps) => (
         
         <div className="flex flex-wrap gap-2">
             {category.items.map((item, idx) => (
-                <span 
+                <a 
                     key={idx} 
-                    className="inline-flex px-2 py-1 text-[10px] font-mono text-gray-500 bg-white/[0.02] border border-white/5 rounded-sm hover:text-white hover:border-white/20 hover:bg-white/5 transition-all cursor-default select-none"
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex px-2 py-1 text-[10px] font-mono text-gray-500 bg-white/[0.02] border border-white/5 rounded-sm hover:text-white hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer select-none no-underline"
                 >
-                    {item}
-                </span>
+                    {item.label}
+                </a>
             ))}
         </div>
     </SpotlightCard>

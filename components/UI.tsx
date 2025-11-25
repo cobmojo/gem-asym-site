@@ -104,6 +104,7 @@ interface RevealProps {
   readonly children?: ReactNode;
   readonly className?: string;
   readonly delay?: number;
+  readonly key?: React.Key | null;
 }
 
 export const Reveal = ({ 

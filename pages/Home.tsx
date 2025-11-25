@@ -1,23 +1,25 @@
 
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { Section, Button, Reveal, DitherGrid, DitherGlobe, SpotlightCard, Container, ScrambleText } from '../components/UI';
+import { ArrowRight, Terminal, Code } from 'lucide-react';
+import { 
+  Section, 
+  Button, 
+  Reveal, 
+  DitherGrid, 
+  DitherGlobe, 
+  SpotlightCard, 
+  Container, 
+  ScrambleText 
+} from '../components/UI';
 import { ButtonVariant } from '../types';
-import { ArrowRight, Terminal, Activity, Code, Zap, Layout, Mail, Fingerprint, Scale, FileCheck, PieChart } from 'lucide-react';
+import InfrastructureBento from '../components/InfrastructureBento';
 
 // --- Types ---
 
 interface PhilosophyItem {
   readonly title: string;
   readonly desc: string;
-}
-
-interface FeatureItem {
-  readonly icon: React.ElementType;
-  readonly title: string;
-  readonly description: string;
-  readonly tech: string;
-  readonly colSpan?: string; // For bento grid layout
 }
 
 // --- Static Data ---
@@ -47,7 +49,7 @@ const TICKER_ITEMS: readonly string[] = [
   "Headless CMS",
   "Audit-Ready Finance",
   "Mobilization Pipelines"
-];
+] as const;
 
 const PHILOSOPHY_CARDS: readonly PhilosophyItem[] = [
     { 
@@ -62,75 +64,19 @@ const PHILOSOPHY_CARDS: readonly PhilosophyItem[] = [
         title: "Open Foundations", 
         desc: "Built on proven open-source standards (Next.js, Keycloak, WordPress). Extensible by design. Safe for the long haul." 
     }
-];
-
-const FEATURES_DATA: readonly FeatureItem[] = [
-    { 
-        icon: Layout, 
-        title: "Sovereign Web Architecture", 
-        description: "Break free from the 'Vendor Trap.' Proprietary site builders lure you in with templates but hold you hostage with expensive change orders. We deploy Headless WordPress coupled with Next.js—industry-standard, portable, and owned entirely by you. Stop paying thousands for simple site updates or feeling stuck with a mediocre template. Own your code, own your content, and escape the cycle of rent-seeking dependencies.",
-        tech: "Next.js / Headless WP",
-        colSpan: "md:col-span-2"
-    },
-    { 
-        icon: Mail, 
-        title: "High-Fidelity Communications", 
-        description: "Every touchpoint is a reflection of your stewardship. From a simple password reset to a complex End-of-Year Tax Statement, we utilize best-in-class tooling (Unlayer) to ensure pixel-perfect branding. No more ugly, generated receipts. Deliver modern, responsive, and beautiful documents that build trust with your partners.",
-        tech: "Unlayer / PDF Generation",
-        colSpan: "md:col-span-2"
-    },
-    { 
-        icon: PieChart, 
-        title: "Native Missionary Intelligence", 
-        description: "Eliminate the 'Fragmentation Tax.' Third-party fundraising overlays (like MPDX or DonorElf) add unnecessary cost, sync errors, and administrative burden. Asymmetric.al provides a unified Mission Control where finance and fundraising live in the same database. Give your workers real-time clarity without the extra fees.",
-        tech: "Real-time / Unified",
-        colSpan: "md:col-span-1"
-    },
-    { 
-        icon: Zap, 
-        title: "Enterprise Orchestration", 
-        description: "We don't rely on fragile, hacked-together scripts. Our backend emits high-fidelity events directly to Zapier, the industry leader in automation. Whether it's triggering a welcome sequence or alerting a director, you can build complex workflows in minutes without writing code.",
-        tech: "Event-Driven / Zapier",
-        colSpan: "md:col-span-1"
-    },
-    {
-        icon: Fingerprint,
-        title: "Fortress Identity",
-        description: "Security isn't an add-on; it's the foundation. We deploy Keycloak—the gold standard in identity management—to protect your people. Enforce Multi-Factor Authentication (MFA) globally and revoke access instantly across all apps.",
-        tech: "Keycloak SSO",
-        colSpan: "md:col-span-1"
-    },
-    {
-        icon: Scale,
-        title: "Zero-Touch Balance",
-        description: "Stop wrestling with spreadsheets at month-end. Our engine listens to webhooks from the banking layer, automatically matching Stripe payouts to individual ledger entries. Real-time solvency without the manual toil.",
-        tech: "Auto-Reconciliation",
-        colSpan: "md:col-span-1"
-    },
-    {
-        icon: Activity,
-        title: "Radical Transparency",
-        description: "You can't steward what you can't see. We instrument the entire stack with OpenTelemetry. From a slow database query to a failed email delivery, you have X-ray vision into the health of your digital operations.",
-        tech: "OpenTelemetry",
-        colSpan: "md:col-span-1"
-    },
-    {
-        icon: FileCheck,
-        title: "Audit-Grade Trust",
-        description: "Integrity is non-negotiable. We maintain a tamper-evident audit log of every critical system action. Who changed that designation? When was that content published? The answer is always one click away.",
-        tech: "Immutable Logs",
-        colSpan: "md:col-span-1"
-    }
-];
+] as const;
 
 // --- Sub-Components ---
 
-const HeroSection: React.FC = () => (
+const HeroSection: React.FC = memo(() => (
     <div className="relative min-h-screen flex items-center justify-center isolate overflow-hidden">
         <DitherGrid />
         
         {/* Layer 0: Background Globe - CSS Containment for Perf */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-70 scale-50 md:scale-100 pointer-events-none will-change-transform">
+        <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-70 scale-50 md:scale-100 pointer-events-none will-change-transform"
+            aria-hidden="true"
+        >
             <DitherGlobe scale={1.2} />
         </div>
 
@@ -157,7 +103,7 @@ const HeroSection: React.FC = () => (
                 {/* Subtext - CSS Animation (Immediate + 200ms delay) */}
                 <div className="relative inline-block opacity-0 animate-[slideUp_0.8s_cubic-bezier(0.16,1,0.3,1)_200ms_forwards]">
                     {/* Subtle backdrop to ensure text readability over globe */}
-                    <div className="absolute inset-0 bg-black/40 blur-2xl -z-10 rounded-full"></div>
+                    <div className="absolute inset-0 bg-black/40 blur-2xl -z-10 rounded-full" aria-hidden="true"></div>
                     <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed text-balance">
                         Less admin. More ministry.
                         The unified platform for the modern missions agency.
@@ -180,7 +126,9 @@ const HeroSection: React.FC = () => (
             </Container>
         </div>
     </div>
-);
+));
+
+HeroSection.displayName = 'HeroSection';
 
 const TickerSection: React.FC = memo(() => {
     return (
@@ -219,7 +167,7 @@ const TickerSection: React.FC = memo(() => {
 
 TickerSection.displayName = 'TickerSection';
 
-const PhilosophySection: React.FC = () => (
+const PhilosophySection: React.FC = memo(() => (
     <Section className="bg-black relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
             
@@ -267,57 +215,11 @@ const PhilosophySection: React.FC = () => (
             </div>
         </div>
     </Section>
-);
+));
 
-const FeaturesSection: React.FC = () => (
-    <Section grid className="bg-white/[0.02] border-t border-white/5 relative">
-         <Container>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/10 pb-8">
-                <Reveal>
-                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white tracking-tighter mb-4">Infrastructure as<br/>Stewardship.</h2>
-                    <p className="text-gray-400 max-w-xl text-lg font-light leading-relaxed">
-                        We don't look for ways to extract rent from your basic needs. 
-                        We build the digital rails for high-trust organizations to operate with sovereignty and speed.
-                    </p>
-                </Reveal>
-                <Reveal delay={200}>
-                    <div className="flex items-center gap-2 mt-6 md:mt-0">
-                        <span className="w-2 h-2 bg-success rounded-full animate-pulse"></span>
-                        <span className="font-mono text-xs text-muted uppercase tracking-widest block">System Capabilities</span>
-                    </div>
-                </Reveal>
-            </div>
+PhilosophySection.displayName = 'PhilosophySection';
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {FEATURES_DATA.map((feature, i) => (
-                    <Reveal key={i} delay={i * 100} className={`h-full ${feature.colSpan || ''}`}>
-                        <SpotlightCard className="p-8 h-full bg-black/40 border-white/5 flex flex-col justify-between group">
-                            <div>
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="p-3 bg-white/5 rounded-sm text-gray-400 group-hover:text-white group-hover:bg-white/10 transition-colors">
-                                        <feature.icon size={24} strokeWidth={1.5} />
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[9px] font-mono uppercase tracking-widest text-white/20 group-hover:text-success transition-colors">
-                                        <Code size={10} />
-                                        {feature.tech}
-                                    </div>
-                                </div>
-                                <h4 className="text-2xl font-bold text-white mb-4 font-display tracking-tight group-hover:text-primary transition-colors">
-                                    {feature.title}
-                                </h4>
-                                <p className="text-sm text-gray-400 leading-relaxed text-balance group-hover:text-gray-300 transition-colors">
-                                    {feature.description}
-                                </p>
-                            </div>
-                        </SpotlightCard>
-                    </Reveal>
-                ))}
-            </div>
-         </Container>
-    </Section>
-);
-
-const RecruitmentSection: React.FC = () => (
+const RecruitmentSection: React.FC = memo(() => (
     <Section className="relative z-10 border-t border-white/5 bg-offblack/30">
         <Reveal>
             <div className="flex flex-col md:flex-row items-center justify-between gap-12">
@@ -347,7 +249,9 @@ const RecruitmentSection: React.FC = () => (
             </div>
         </Reveal>
     </Section>
-);
+));
+
+RecruitmentSection.displayName = 'RecruitmentSection';
 
 // --- Main Component ---
 
@@ -357,7 +261,7 @@ const Home: React.FC = () => {
       <HeroSection />
       <TickerSection />
       <PhilosophySection />
-      <FeaturesSection />
+      <InfrastructureBento />
       <RecruitmentSection />
     </div>
   );

@@ -2,18 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// Select the DOM container where the React app will attach
+/**
+ * Application Entry Point
+ *
+ * Initializes the React 18 concurrent root and mounts the application.
+ * StrictMode is enabled to highlight potential problems in the application lifecycle.
+ */
+
+// Locate the root DOM node
 const container = document.getElementById('root');
 
-// Fail fast if the container is missing to prevent silent failures
+// Integrity check: Ensure the mount point exists before attempting to render
 if (!container) {
-  throw new Error("Fatal: Could not find root element '#root' to mount React application.");
+  throw new Error("Fatal Error: Failed to find the root element. Ensure 'index.html' contains <div id='root'></div>.");
 }
 
-// Create a concurrent root for React 18+
+// Initialize the React 18 concurrent root
 const root = ReactDOM.createRoot(container);
 
-// Render the root component within StrictMode
+// Render the application
 root.render(
   <React.StrictMode>
     <App />

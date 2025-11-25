@@ -1,7 +1,17 @@
 
-import React, { useEffect, useRef, useState, ButtonHTMLAttributes, ReactNode, CSSProperties, forwardRef, memo, useCallback } from 'react';
-import { ButtonVariant } from '../types';
+import React, { 
+  useEffect, 
+  useRef, 
+  useState, 
+  ButtonHTMLAttributes, 
+  ReactNode, 
+  CSSProperties, 
+  forwardRef, 
+  memo, 
+  useCallback 
+} from 'react';
 import { Loader2, Plus } from 'lucide-react';
+import { ButtonVariant } from '../types';
 
 // --- Constants ---
 const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#@$";
@@ -15,7 +25,11 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
 };
 
 // --- Logo ---
-export const Logo = memo(({ className = "w-6 h-6" }: { className?: string }) => (
+interface LogoProps {
+  readonly className?: string;
+}
+
+export const Logo = memo(({ className = "w-6 h-6" }: LogoProps) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
     <path d="M4 4H20V20H4V4Z" stroke="currentColor" strokeWidth="1.5"/>
     <path d="M14 4V20" stroke="currentColor" strokeWidth="1.5"/>
@@ -27,9 +41,9 @@ Logo.displayName = 'Logo';
 
 // --- Scramble Text ---
 interface ScrambleTextProps {
-  text: string;
-  className?: string;
-  delay?: number;
+  readonly text: string;
+  readonly className?: string;
+  readonly delay?: number;
 }
 
 export const ScrambleText = memo(({ text, className = "", delay = 0 }: ScrambleTextProps) => {
@@ -74,7 +88,12 @@ export const ScrambleText = memo(({ text, className = "", delay = 0 }: ScrambleT
 ScrambleText.displayName = 'ScrambleText';
 
 // --- Container ---
-export const Container: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = "" }) => (
+interface ContainerProps {
+  readonly children?: ReactNode;
+  readonly className?: string;
+}
+
+export const Container = ({ children, className = "" }: ContainerProps) => (
   <div className={`max-w-[1280px] mx-auto px-6 md:px-12 ${className}`}>
     {children}
   </div>
@@ -82,16 +101,16 @@ export const Container: React.FC<{ children: ReactNode; className?: string }> = 
 
 // --- Reveal (Lazy Load Animation) ---
 interface RevealProps {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
+  readonly children?: ReactNode;
+  readonly className?: string;
+  readonly delay?: number;
 }
 
-export const Reveal: React.FC<RevealProps> = ({ 
+export const Reveal = ({ 
   children, 
   className = "", 
   delay = 0 
-}) => {
+}: RevealProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -126,26 +145,26 @@ export const Reveal: React.FC<RevealProps> = ({
 
 // --- Tech Panel (Card) ---
 interface TechPanelProps {
-  children: ReactNode;
-  className?: string;
-  title?: string;
-  noBorder?: boolean;
+  readonly children?: ReactNode;
+  readonly className?: string;
+  readonly title?: string;
+  readonly noBorder?: boolean;
 }
 
-export const TechPanel: React.FC<TechPanelProps> = ({ children, className = '', title, noBorder = false }) => {
+export const TechPanel = ({ children, className = '', title, noBorder = false }: TechPanelProps) => {
   return (
     <div className={`relative bg-offblack/40 ${!noBorder ? 'border border-white/5' : ''} ${className} group overflow-hidden`}>
       {/* Subtle corner markers */}
       {!noBorder && (
         <div className="pointer-events-none" aria-hidden="true">
-          <div className="absolute top-0 left-0 w-px h-2 bg-white/20"></div>
-          <div className="absolute top-0 left-0 w-2 h-px bg-white/20"></div>
-          <div className="absolute top-0 right-0 w-px h-2 bg-white/20"></div>
-          <div className="absolute top-0 right-0 w-2 h-px bg-white/20"></div>
-          <div className="absolute bottom-0 left-0 w-px h-2 bg-white/20"></div>
-          <div className="absolute bottom-0 left-0 w-2 h-px bg-white/20"></div>
-          <div className="absolute bottom-0 right-0 w-px h-2 bg-white/20"></div>
-          <div className="absolute bottom-0 right-0 w-2 h-px bg-white/20"></div>
+          <div className="absolute top-0 left-0 w-px h-2 bg-white/20" />
+          <div className="absolute top-0 left-0 w-2 h-px bg-white/20" />
+          <div className="absolute top-0 right-0 w-px h-2 bg-white/20" />
+          <div className="absolute top-0 right-0 w-2 h-px bg-white/20" />
+          <div className="absolute bottom-0 left-0 w-px h-2 bg-white/20" />
+          <div className="absolute bottom-0 left-0 w-2 h-px bg-white/20" />
+          <div className="absolute bottom-0 right-0 w-px h-2 bg-white/20" />
+          <div className="absolute bottom-0 right-0 w-2 h-px bg-white/20" />
         </div>
       )}
       
@@ -163,7 +182,12 @@ export const TechPanel: React.FC<TechPanelProps> = ({ children, className = '', 
 };
 
 // --- Spotlight Card (Performance Optimized) ---
-export const SpotlightCard: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = "" }) => {
+interface SpotlightCardProps {
+  readonly children?: ReactNode;
+  readonly className?: string;
+}
+
+export const SpotlightCard = ({ children, className = "" }: SpotlightCardProps) => {
     const divRef = useRef<HTMLDivElement>(null);
     const [opacity, setOpacity] = useState(0);
 
@@ -205,9 +229,9 @@ export const SpotlightCard: React.FC<{ children: ReactNode; className?: string }
 
 // --- Button ---
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  isLoading?: boolean;
-  icon?: ReactNode;
+  readonly variant?: ButtonVariant;
+  readonly isLoading?: boolean;
+  readonly icon?: ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ 
@@ -239,13 +263,13 @@ Button.displayName = 'Button';
 
 // --- Section ---
 interface SectionProps {
-  children: ReactNode;
-  className?: string;
-  id?: string;
-  grid?: boolean;
+  readonly children?: ReactNode;
+  readonly className?: string;
+  readonly id?: string;
+  readonly grid?: boolean;
 }
 
-export const Section: React.FC<SectionProps> = ({ children, className = '', id, grid = false }) => {
+export const Section = ({ children, className = '', id, grid = false }: SectionProps) => {
   return (
     <section id={id} className={`relative py-24 md:py-32 overflow-hidden ${className}`}>
        {grid && (
@@ -255,8 +279,7 @@ export const Section: React.FC<SectionProps> = ({ children, className = '', id, 
                 backgroundSize: '60px 60px' 
               }}
               aria-hidden="true"
-         >
-         </div>
+         />
        )}
       <Container className="relative z-10">
         {children}
@@ -266,35 +289,48 @@ export const Section: React.FC<SectionProps> = ({ children, className = '', id, 
 };
 
 // --- Grid Pattern ---
-export const GridPattern: React.FC<{ className?: string }> = ({ className = "" }) => {
+interface GridPatternProps {
+  readonly className?: string;
+}
+
+export const GridPattern = ({ className = "" }: GridPatternProps) => {
   return (
     <div className={`absolute inset-0 pointer-events-none ${className}`} aria-hidden="true">
       <div className="absolute inset-0 opacity-5" 
           style={{ 
             backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)', 
             backgroundSize: '100px 100px' 
-          }}>
-      </div>
+          }}
+      />
     </div>
   );
 };
 
 // --- Dither Grid ---
-export const DitherGrid: React.FC<{ className?: string }> = ({ className = "" }) => {
+interface DitherGridProps {
+  readonly className?: string;
+}
+
+export const DitherGrid = ({ className = "" }: DitherGridProps) => {
   return (
     <div className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className}`} aria-hidden="true">
       <div className="absolute inset-0 opacity-[0.05]"
            style={{
              backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
              backgroundSize: '32px 32px'
-           }}>
-      </div>
+           }}
+      />
     </div>
   );
 };
 
 // --- Enhanced Dither Globe (ULTRA RAD EDITION) ---
-export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = memo(({ className = "", scale = 1 }) => {
+interface DitherGlobeProps {
+  readonly className?: string;
+  readonly scale?: number;
+}
+
+export const DitherGlobe = memo(({ className = "", scale = 1 }: DitherGlobeProps) => {
   const sizeStyle: CSSProperties = { width: `${500 * scale}px`, height: `${500 * scale}px` };
 
   return (
@@ -315,7 +351,7 @@ export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = mem
                   backgroundSize: '20px 20px',
                   transform: 'rotate(45deg)'
                }}
-          ></div>
+          />
         </div>
 
         {/* Layer 2: Surface (Sparse, Reverse, Fast) */}
@@ -325,7 +361,7 @@ export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = mem
                   backgroundImage: 'radial-gradient(circle at center, #fff 2px, transparent 2px)',
                   backgroundSize: '40px 40px',
                }}
-          ></div>
+          />
         </div>
         
         {/* Layer 3: Deep Data (Medium, Offset) */}
@@ -336,31 +372,31 @@ export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = mem
                      backgroundSize: '24px 24px',
                      transform: 'rotate(-15deg)'
                  }}
-            ></div>
+            />
         </div>
 
         {/* 3D Shading Gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,transparent_10%,black_90%)] z-20"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,transparent_10%,black_90%)] z-20" />
         
         {/* Scanline Effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent h-[20%] w-full animate-scan z-30 pointer-events-none opacity-40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent h-[20%] w-full animate-scan z-30 pointer-events-none opacity-40" />
 
         {/* Rim Light */}
-        <div className="absolute inset-0 rounded-full shadow-[inset_-10px_-10px_60px_rgba(255,255,255,0.1)] z-30"></div>
+        <div className="absolute inset-0 rounded-full shadow-[inset_-10px_-10px_60px_rgba(255,255,255,0.1)] z-30" />
       </div>
       
       {/* Outer Orbital Ring (Static Tilt) */}
-      <div className="absolute inset-[-10%] rounded-full border border-dashed border-white/10 animate-[spin-slow_180s_linear_infinite] opacity-30 z-0"></div>
-      <div className="absolute inset-[-25%] rounded-full border border-dotted border-white/5 animate-[spin-reverse-slower_200s_linear_infinite] opacity-20 z-0"></div>
+      <div className="absolute inset-[-10%] rounded-full border border-dashed border-white/10 animate-[spin-slow_180s_linear_infinite] opacity-30 z-0" />
+      <div className="absolute inset-[-25%] rounded-full border border-dotted border-white/5 animate-[spin-reverse-slower_200s_linear_infinite] opacity-20 z-0" />
 
       {/* Dynamic Satellite 1 (Bot) */}
       <div className="absolute inset-[-20%] w-[140%] h-[140%] animate-spin-slow z-0 opacity-60">
-         <div className="absolute top-1/2 right-0 w-2 h-2 bg-white rounded-full shadow-[0_0_15px_white]"></div>
+         <div className="absolute top-1/2 right-0 w-2 h-2 bg-white rounded-full shadow-[0_0_15px_white]" />
       </div>
 
       {/* Dynamic Satellite 2 (Bot - Counter Orbit) */}
        <div className="absolute inset-[-35%] w-[170%] h-[170%] animate-[spin-reverse_60s_linear_infinite] z-0 opacity-40">
-         <div className="absolute top-1/3 left-0 w-1.5 h-1.5 bg-success rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+         <div className="absolute top-1/3 left-0 w-1.5 h-1.5 bg-success rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
       </div>
 
       {/* Crosshairs & HUD Elements */}

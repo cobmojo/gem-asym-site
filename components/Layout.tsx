@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+
+import React, { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight, Github } from 'lucide-react';
 import { NAV_ITEMS } from '../constants';
@@ -7,13 +8,13 @@ import { Logo, Container } from './UI';
 // --- Types ---
 
 interface FooterLinkItem {
-  label: string;
-  to: string;
+  readonly label: string;
+  readonly to: string;
 }
 
 interface FooterSectionData {
-  title: string;
-  links: readonly FooterLinkItem[];
+  readonly title: string;
+  readonly links: readonly FooterLinkItem[];
 }
 
 // --- Constants ---
@@ -49,14 +50,14 @@ const FOOTER_SECTIONS: readonly FooterSectionData[] = [
 
 // --- Navbar Sub-components ---
 
-const MobileNavOverlay: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
+const MobileNavOverlay: React.FC<{ readonly isOpen: boolean }> = memo(({ isOpen }) => {
   if (!isOpen) return null;
 
   return (
     <div 
       className="fixed inset-0 bg-black/95 backdrop-blur-xl z-40 flex flex-col justify-center px-8 animate-fade-in" 
-      aria-modal="true" 
       role="dialog"
+      aria-modal="true"
       aria-label="Mobile Navigation"
     >
       <nav className="flex flex-col gap-8 relative z-50">
@@ -78,9 +79,11 @@ const MobileNavOverlay: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
       </div>
     </div>
   );
-};
+});
 
-const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => {
+MobileNavOverlay.displayName = 'MobileNavOverlay';
+
+const DesktopNavLinks: React.FC<{ readonly currentPath: string }> = memo(({ currentPath }) => {
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -102,7 +105,7 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
   }, [currentPath]);
 
   return (
-    <div className="hidden md:flex items-center bg-black/80 backdrop-blur-md border border-white/10 p-1 rounded-full relative" role="menubar">
+    <div className="hidden md:flex items-center bg-black/80 backdrop-blur-md border border-white/10 p-1 rounded-full relative">
        {/* Sliding Pill */}
        <div 
          className="absolute top-1 bottom-1 bg-white rounded-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
@@ -121,7 +124,6 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
             key={item.path}
             to={item.path}
             ref={(el) => { linksRef.current[index] = el; }}
-            role="menuitem"
             aria-current={isActive ? 'page' : undefined}
             className={`relative z-10 px-5 py-2 text-[11px] font-mono uppercase tracking-widest rounded-full transition-colors duration-300 ${
               isActive 
@@ -135,11 +137,13 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
       })}
     </div>
   );
-};
+});
+
+DesktopNavLinks.displayName = 'DesktopNavLinks';
 
 // --- Navbar Main Component ---
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
@@ -158,7 +162,7 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between py-6">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 z-50 group relative" aria-label="Asymmetric.al Home">
-                <div className="absolute inset-0 bg-black/50 blur-lg rounded-full md:hidden"></div>
+                <div className="absolute inset-0 bg-black/50 blur-lg rounded-full md:hidden" aria-hidden="true"></div>
                 <Logo className="text-white w-6 h-6 relative z-10" />
                 <span className="font-display font-bold tracking-tight text-white text-lg hidden md:block relative z-10">
                     Asymmetric.al
@@ -186,22 +190,26 @@ export const Navbar: React.FC = () => {
       <MobileNavOverlay isOpen={isOpen} />
     </nav>
   );
-};
+});
+
+Navbar.displayName = 'Navbar';
 
 // --- Footer Sub-components ---
 
-const FooterHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const FooterHeader: React.FC<{ readonly children: React.ReactNode }> = memo(({ children }) => (
     <h4 className="font-mono text-[10px] uppercase tracking-widest text-white mb-8 border-b border-white/10 pb-2 inline-block">
         {children}
     </h4>
-);
+));
+
+FooterHeader.displayName = 'FooterHeader';
 
 interface FooterLinkProps {
-  to?: string;
-  children: React.ReactNode;
+  readonly to?: string;
+  readonly children: React.ReactNode;
 }
 
-const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
+const FooterLink: React.FC<FooterLinkProps> = memo(({ to, children }) => {
     const content = (
         <>
             <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-5 group-hover:ml-0 text-white" />
@@ -222,9 +230,11 @@ const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
             )}
         </li>
     );
-};
+});
 
-const FooterManifesto: React.FC = () => (
+FooterLink.displayName = 'FooterLink';
+
+const FooterManifesto: React.FC = memo(() => (
     <div className="mb-16">
         <h2 className="font-mono text-xs text-muted uppercase tracking-widest mb-8">
             The Manifesto
@@ -247,9 +257,11 @@ const FooterManifesto: React.FC = () => (
             </div>
         </div>
     </div>
-);
+));
 
-const FooterCovering: React.FC = () => (
+FooterManifesto.displayName = 'FooterManifesto';
+
+const FooterCovering: React.FC = memo(() => (
     <div className="col-span-2 md:col-span-1">
          <FooterHeader>04 // Covering</FooterHeader>
          <p className="text-sm text-muted leading-relaxed font-mono">
@@ -260,9 +272,11 @@ const FooterCovering: React.FC = () => (
             <Logo className="w-8 h-8 text-white opacity-40" />
          </div>
     </div>
-);
+));
 
-const FooterBottomBar: React.FC<{ year: number }> = ({ year }) => (
+FooterCovering.displayName = 'FooterCovering';
+
+const FooterBottomBar: React.FC<{ readonly year: number }> = memo(({ year }) => (
     <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-t border-white/10 pt-8">
         <div className="text-[10px] font-mono text-muted uppercase tracking-widest">
             Asymmetric.al © {year}
@@ -283,11 +297,13 @@ const FooterBottomBar: React.FC<{ year: number }> = ({ year }) => (
             </div>
         </div>
     </div>
-);
+));
+
+FooterBottomBar.displayName = 'FooterBottomBar';
 
 // --- Footer Main Component ---
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC = memo(() => {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   return (
@@ -323,4 +339,6 @@ export const Footer: React.FC = () => {
       </Container>
     </footer>
   );
-};
+});
+
+Footer.displayName = 'Footer';

@@ -1,13 +1,40 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Section, Reveal, SpotlightCard, TechPanel, ScrambleText, Button, DitherGrid, DitherGlobe } from '../components/UI';
-import { Code, Globe, ArrowRight, Zap, Terminal, Users, GitPullRequest, BookOpen, Heart } from 'lucide-react';
+import { Code, Globe, ArrowRight, Zap, Terminal, Users, GitPullRequest, BookOpen, Heart, LucideIcon } from 'lucide-react';
 import { ButtonVariant } from '../types';
+
+// --- Types ---
+
+interface Pathway {
+    title: string;
+    icon: LucideIcon;
+    subtitle: string;
+    desc: string;
+    action: string;
+    link: string;
+    internal: boolean;
+}
+
+interface ValueItem {
+    title: string;
+    icon: LucideIcon;
+    desc: string;
+}
+
+interface RoleItem {
+    id: string;
+    title: string;
+    type: string;
+    location: string;
+    stack: string;
+    desc: string;
+}
 
 // --- Static Data ---
 
-const PATHWAYS = [
+const PATHWAYS: readonly Pathway[] = [
     {
         title: "Full-Time Staff",
         icon: Users,
@@ -37,7 +64,7 @@ const PATHWAYS = [
     }
 ];
 
-const VALUES = [
+const VALUES: readonly ValueItem[] = [
     {
         title: "Excellence as Stewardship",
         icon: Heart,
@@ -55,7 +82,7 @@ const VALUES = [
     }
 ];
 
-const OPEN_ROLES = [
+const OPEN_ROLES: readonly RoleItem[] = [
     {
         id: 'fe-eng',
         title: "Senior Frontend Engineer",
@@ -106,14 +133,106 @@ const OPEN_ROLES = [
     }
 ];
 
+// --- Sub-Components ---
+
+const PathwayCard: React.FC<{ pathway: Pathway; onScroll: (e: React.MouseEvent) => void }> = ({ pathway, onScroll }) => (
+    <SpotlightCard className="bg-black/50 border-white/10 h-full flex flex-col justify-between p-8 group">
+        <div>
+            <div className="flex justify-between items-start mb-6">
+                <div className="p-3 bg-white/5 rounded-sm border border-white/10 group-hover:border-white/30 group-hover:text-white text-gray-400 transition-all">
+                    <pathway.icon size={24} strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-muted">{pathway.subtitle}</span>
+            </div>
+            <h3 className="text-xl font-display font-bold text-white mb-4">{pathway.title}</h3>
+            <p className="text-sm text-gray-400 leading-relaxed mb-8">{pathway.desc}</p>
+        </div>
+        <div className="pt-6 border-t border-white/5">
+            {pathway.internal ? (
+                <button 
+                    onClick={onScroll}
+                    className="text-xs font-mono text-white group-hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest cursor-pointer w-fit focus:outline-none"
+                >
+                    {pathway.action} <ArrowRight size={12} />
+                </button>
+            ) : (
+                <a 
+                    href={pathway.link}
+                    target={pathway.link.startsWith('http') ? "_blank" : undefined}
+                    rel={pathway.link.startsWith('http') ? "noopener noreferrer" : undefined}
+                    className="text-xs font-mono text-white group-hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest cursor-pointer w-fit"
+                >
+                    {pathway.action} <ArrowRight size={12} />
+                </a>
+            )}
+        </div>
+    </SpotlightCard>
+);
+
+const ValueCard: React.FC<{ value: ValueItem }> = ({ value }) => (
+    <div className="p-8 border-l border-white/10 hover:bg-white/[0.02] transition-colors">
+        <value.icon size={24} strokeWidth={1.5} className="text-gray-500 mb-6" />
+        <h3 className="text-lg font-display font-bold text-white mb-3 tracking-tight">{value.title}</h3>
+        <p className="text-sm text-muted leading-relaxed text-balance">{value.desc}</p>
+    </div>
+);
+
+const RoleCard: React.FC<{ role: RoleItem }> = ({ role }) => {
+    // Determine badge styling based on role type
+    const isSupportRaised = role.type.includes('Support');
+    const badgeStyle = isSupportRaised 
+        ? 'bg-blue-900/20 text-blue-300 border border-blue-800/30' 
+        : 'bg-white/10 text-white/80';
+
+    return (
+        <TechPanel noBorder className="border border-white/10 bg-black hover:border-white/30 transition-all group relative overflow-hidden">
+             <div className="absolute inset-0 bg-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+             
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                 <div className="flex-1">
+                     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-3">
+                         <h3 className="text-xl font-bold text-white font-display">{role.title}</h3>
+                         <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider w-fit ${badgeStyle}`}>
+                            {role.type}
+                         </span>
+                     </div>
+                     <p className="text-gray-400 text-sm max-w-2xl mb-4 leading-relaxed">{role.desc}</p>
+                     <div className="flex flex-wrap gap-2">
+                         <div className="flex items-center gap-1 text-[10px] font-mono text-primary uppercase tracking-widest">
+                             <Code size={10} /> {role.stack}
+                         </div>
+                         <span className="text-white/10 text-[10px]">|</span>
+                         <div className="flex items-center gap-1 text-[10px] font-mono text-muted uppercase tracking-widest">
+                             <Globe size={10} /> {role.location}
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div className="flex items-center justify-end">
+                     <Link to="/contact">
+                         <Button 
+                            variant={ButtonVariant.SECONDARY} 
+                            className="border-white/20 text-white hover:bg-white hover:!text-black hover:border-white transition-all duration-300"
+                         >
+                             Initiate <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                         </Button>
+                     </Link>
+                 </div>
+             </div>
+        </TechPanel>
+    );
+};
+
+// --- Main Component ---
+
 const Join: React.FC = () => {
-  const scrollToRoles = (e: React.MouseEvent) => {
+  const scrollToRoles = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const element = document.getElementById('roles');
     if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, []);
 
   return (
     <div className="pt-24 min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
@@ -156,37 +275,7 @@ const Join: React.FC = () => {
 
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {PATHWAYS.map((path, i) => (
-                    <SpotlightCard key={i} className="bg-black/50 border-white/10 h-full flex flex-col justify-between p-8 group">
-                        <div>
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="p-3 bg-white/5 rounded-sm border border-white/10 group-hover:border-white/30 group-hover:text-white text-gray-400 transition-all">
-                                    <path.icon size={24} strokeWidth={1.5} />
-                                </div>
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-muted">{path.subtitle}</span>
-                            </div>
-                            <h3 className="text-xl font-display font-bold text-white mb-4">{path.title}</h3>
-                            <p className="text-sm text-gray-400 leading-relaxed mb-8">{path.desc}</p>
-                        </div>
-                        <div className="pt-6 border-t border-white/5">
-                            {path.internal ? (
-                                <button 
-                                    onClick={scrollToRoles}
-                                    className="text-xs font-mono text-white group-hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest cursor-pointer w-fit focus:outline-none"
-                                >
-                                    {path.action} <ArrowRight size={12} />
-                                </button>
-                            ) : (
-                                <a 
-                                    href={path.link}
-                                    target={path.link.startsWith('http') ? "_blank" : undefined}
-                                    rel={path.link.startsWith('http') ? "noopener noreferrer" : undefined}
-                                    className="text-xs font-mono text-white group-hover:text-primary transition-colors flex items-center gap-2 uppercase tracking-widest cursor-pointer w-fit"
-                                >
-                                    {path.action} <ArrowRight size={12} />
-                                </a>
-                            )}
-                        </div>
-                    </SpotlightCard>
+                    <PathwayCard key={i} pathway={path} onScroll={scrollToRoles} />
                 ))}
              </div>
           </Reveal>
@@ -202,11 +291,7 @@ const Join: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {VALUES.map((item, i) => (
-                    <div key={i} className="p-8 border-l border-white/10 hover:bg-white/[0.02] transition-colors">
-                        <item.icon size={24} strokeWidth={1.5} className="text-gray-500 mb-6" />
-                        <h3 className="text-lg font-display font-bold text-white mb-3 tracking-tight">{item.title}</h3>
-                        <p className="text-sm text-muted leading-relaxed text-balance">{item.desc}</p>
-                    </div>
+                    <ValueCard key={i} value={item} />
                 ))}
             </div>
           </Reveal>
@@ -223,42 +308,8 @@ const Join: React.FC = () => {
              </div>
 
              <div className="grid grid-cols-1 gap-4">
-                 {OPEN_ROLES.map((role, i) => (
-                     <TechPanel key={role.id} noBorder className="border border-white/10 bg-black hover:border-white/30 transition-all group relative overflow-hidden">
-                         <div className="absolute inset-0 bg-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                         
-                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                             <div className="flex-1">
-                                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-3">
-                                     <h3 className="text-xl font-bold text-white font-display">{role.title}</h3>
-                                     <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider w-fit ${role.type.includes('Support') ? 'bg-blue-900/20 text-blue-300 border border-blue-800/30' : 'bg-white/10 text-white/80'}`}>
-                                        {role.type}
-                                     </span>
-                                 </div>
-                                 <p className="text-gray-400 text-sm max-w-2xl mb-4 leading-relaxed">{role.desc}</p>
-                                 <div className="flex flex-wrap gap-2">
-                                     <div className="flex items-center gap-1 text-[10px] font-mono text-primary uppercase tracking-widest">
-                                         <Code size={10} /> {role.stack}
-                                     </div>
-                                     <span className="text-white/10 text-[10px]">|</span>
-                                     <div className="flex items-center gap-1 text-[10px] font-mono text-muted uppercase tracking-widest">
-                                         <Globe size={10} /> {role.location}
-                                     </div>
-                                 </div>
-                             </div>
-                             
-                             <div className="flex items-center justify-end">
-                                 <Link to="/contact">
-                                     <Button 
-                                        variant={ButtonVariant.SECONDARY} 
-                                        className="border-white/20 text-white hover:bg-white hover:!text-black hover:border-white transition-all duration-300"
-                                     >
-                                         Initiate <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                                     </Button>
-                                 </Link>
-                             </div>
-                         </div>
-                     </TechPanel>
+                 {OPEN_ROLES.map((role) => (
+                     <RoleCard key={role.id} role={role} />
                  ))}
              </div>
 

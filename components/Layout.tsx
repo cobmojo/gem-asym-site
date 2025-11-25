@@ -1,32 +1,79 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight, Github } from 'lucide-react';
 import { NAV_ITEMS } from '../constants';
 import { Logo, Container } from './UI';
 
-// --- Navbar Subcomponents ---
+// --- Types ---
+
+interface FooterLinkItem {
+  label: string;
+  to: string;
+}
+
+interface FooterSectionData {
+  title: string;
+  links: readonly FooterLinkItem[];
+}
+
+// --- Constants ---
+
+const FOOTER_SECTIONS: readonly FooterSectionData[] = [
+  {
+    title: "01 // Platform",
+    links: [
+      { label: "Mission Control", to: "/product" },
+      { label: "System Specs", to: "/specs" },
+      { label: "Philosophy", to: "/manifesto" },
+      { label: "Statement of Faith", to: "/faith" }
+    ]
+  },
+  {
+    title: "02 // Involvement",
+    links: [
+      { label: "For Missions", to: "/missions" },
+      { label: "Give to Build", to: "/give" },
+      { label: "Join the Team", to: "/join" },
+      { label: "Contact Us", to: "/contact" }
+    ]
+  },
+  {
+    title: "03 // Legal",
+    links: [
+      { label: "Privacy Policy", to: "/privacy" },
+      { label: "Terms of Service", to: "/terms" },
+      { label: "501(c)(3) Disclosure", to: "/disclosure" }
+    ]
+  }
+];
+
+// --- Navbar Sub-components ---
 
 const MobileNavOverlay: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-40 flex flex-col justify-center px-8 animate-fade-in" aria-modal="true" role="dialog">
-      <div className="flex flex-col gap-8 relative z-50">
-        <Link to="/" className="text-5xl font-display font-bold text-white border-b border-white/10 pb-4">Home</Link>
+    <div 
+      className="fixed inset-0 bg-black/95 backdrop-blur-xl z-40 flex flex-col justify-center px-8 animate-fade-in" 
+      aria-modal="true" 
+      role="dialog"
+      aria-label="Mobile Navigation"
+    >
+      <nav className="flex flex-col gap-8 relative z-50">
+        <Link to="/" className="text-5xl font-display font-bold text-white border-b border-white/10 pb-4 w-fit">Home</Link>
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className="text-5xl font-display font-bold text-muted hover:text-white transition-colors"
+            className="text-5xl font-display font-bold text-muted hover:text-white transition-colors w-fit"
           >
             {item.label}
           </Link>
         ))}
-      </div>
+      </nav>
       
       {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20" aria-hidden="true">
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl"></div>
       </div>
     </div>
@@ -55,7 +102,7 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
   }, [currentPath]);
 
   return (
-    <div className="hidden md:flex items-center bg-black/80 backdrop-blur-md border border-white/10 p-1 rounded-full relative">
+    <div className="hidden md:flex items-center bg-black/80 backdrop-blur-md border border-white/10 p-1 rounded-full relative" role="menubar">
        {/* Sliding Pill */}
        <div 
          className="absolute top-1 bottom-1 bg-white rounded-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
@@ -64,6 +111,7 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
             width: pillStyle.width,
             opacity: pillStyle.opacity
          }}
+         aria-hidden="true"
        />
 
       {NAV_ITEMS.map((item, index) => {
@@ -73,6 +121,8 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
             key={item.path}
             to={item.path}
             ref={(el) => { linksRef.current[index] = el; }}
+            role="menuitem"
+            aria-current={isActive ? 'page' : undefined}
             className={`relative z-10 px-5 py-2 text-[11px] font-mono uppercase tracking-widest rounded-full transition-colors duration-300 ${
               isActive 
                 ? 'text-black font-bold' 
@@ -87,7 +137,8 @@ const DesktopNavLinks: React.FC<{ currentPath: string }> = ({ currentPath }) => 
   );
 };
 
-// --- Navbar Component ---
+// --- Navbar Main Component ---
+
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -102,11 +153,11 @@ export const Navbar: React.FC = () => {
   }, [isOpen]);
 
   return (
-    <nav className="fixed top-0 w-full z-50">
+    <nav className="fixed top-0 w-full z-50" aria-label="Main Navigation">
       <Container>
         <div className="flex items-center justify-between py-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 z-50 group relative">
+            <Link to="/" className="flex items-center gap-3 z-50 group relative" aria-label="Asymmetric.al Home">
                 <div className="absolute inset-0 bg-black/50 blur-lg rounded-full md:hidden"></div>
                 <Logo className="text-white w-6 h-6 relative z-10" />
                 <span className="font-display font-bold tracking-tight text-white text-lg hidden md:block relative z-10">
@@ -122,6 +173,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
+                aria-controls="mobile-menu"
             >
                 <div className="absolute inset-0 bg-black/50 blur-md rounded-full"></div>
                 <span className="relative z-10">
@@ -136,7 +188,7 @@ export const Navbar: React.FC = () => {
   );
 };
 
-// --- Footer Subcomponents ---
+// --- Footer Sub-components ---
 
 const FooterHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <h4 className="font-mono text-[10px] uppercase tracking-widest text-white mb-8 border-b border-white/10 pb-2 inline-block">
@@ -144,7 +196,12 @@ const FooterHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     </h4>
 );
 
-const FooterLink: React.FC<{ to?: string; children: React.ReactNode }> = ({ to, children }) => {
+interface FooterLinkProps {
+  to?: string;
+  children: React.ReactNode;
+}
+
+const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
     const content = (
         <>
             <ArrowRight size={12} className="opacity-0 group-hover:opacity-100 transition-all duration-300 -ml-5 group-hover:ml-0 text-white" />
@@ -212,7 +269,13 @@ const FooterBottomBar: React.FC<{ year: number }> = ({ year }) => (
         </div>
         
         <div className="flex items-center gap-6">
-            <a href="https://github.com/Asymmetric-al" target="_blank" rel="noreferrer" className="text-muted hover:text-white transition-colors" aria-label="GitHub">
+            <a 
+                href="https://github.com/Asymmetric-al" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-muted hover:text-white transition-colors" 
+                aria-label="Visit our GitHub Organization"
+            >
                 <Github size={16} />
             </a>
             <div className="text-[10px] font-mono text-white uppercase tracking-widest">
@@ -222,37 +285,8 @@ const FooterBottomBar: React.FC<{ year: number }> = ({ year }) => (
     </div>
 );
 
-// --- Footer Data Configuration ---
-const FOOTER_SECTIONS = [
-    {
-        title: "01 // Platform",
-        links: [
-            { label: "Mission Control", to: "/product" },
-            { label: "System Specs", to: "/specs" },
-            { label: "Philosophy", to: "/manifesto" },
-            { label: "Statement of Faith", to: "/faith" }
-        ]
-    },
-    {
-        title: "02 // Involvement",
-        links: [
-            { label: "For Missions", to: "/missions" },
-            { label: "Give to Build", to: "/give" },
-            { label: "Join the Team", to: "/join" },
-            { label: "Contact Us", to: "/contact" }
-        ]
-    },
-    {
-        title: "03 // Legal",
-        links: [
-            { label: "Privacy Policy", to: "/privacy" },
-            { label: "Terms of Service", to: "/terms" },
-            { label: "501(c)(3) Disclosure", to: "/disclosure" }
-        ]
-    }
-];
+// --- Footer Main Component ---
 
-// --- Footer Component ---
 export const Footer: React.FC = () => {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
@@ -261,7 +295,9 @@ export const Footer: React.FC = () => {
       
       {/* Background Texture */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+           style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+           aria-hidden="true"
+      >
       </div>
 
       <Container className="relative z-10">

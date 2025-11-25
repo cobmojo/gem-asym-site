@@ -1,33 +1,52 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, ButtonHTMLAttributes, ReactNode, CSSProperties, forwardRef, memo, useCallback } from 'react';
 import { ButtonVariant } from '../types';
 import { Loader2, Plus } from 'lucide-react';
 
+// --- Constants ---
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#@$";
+
+const BUTTON_BASE_STYLES = "inline-flex items-center justify-center px-8 py-4 text-sm transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed tracking-widest font-mono uppercase border group relative overflow-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black";
+
+const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
+  [ButtonVariant.PRIMARY]: "bg-white text-black border-white hover:bg-transparent hover:text-white",
+  [ButtonVariant.SECONDARY]: "bg-transparent border-border text-muted hover:border-white hover:text-white",
+  [ButtonVariant.TERTIARY]: "bg-transparent border-transparent text-muted hover:text-white px-0 py-1 underline-offset-4 hover:underline",
+};
+
 // --- Logo ---
-export const Logo: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+export const Logo = memo(({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
     <path d="M4 4H20V20H4V4Z" stroke="currentColor" strokeWidth="1.5"/>
     <path d="M14 4V20" stroke="currentColor" strokeWidth="1.5"/>
     <circle cx="17" cy="7" r="1.5" fill="currentColor"/>
   </svg>
-);
+));
+
+Logo.displayName = 'Logo';
 
 // --- Scramble Text ---
-export const ScrambleText: React.FC<{ text: string; className?: string; delay?: number }> = ({ text, className = "", delay = 0 }) => {
+interface ScrambleTextProps {
+  text: string;
+  className?: string;
+  delay?: number;
+}
+
+export const ScrambleText = memo(({ text, className = "", delay = 0 }: ScrambleTextProps) => {
   const [display, setDisplay] = useState(text);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#@$";
   
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
     let timeout: ReturnType<typeof setTimeout>;
     let iteration = 0;
     
     const startScramble = () => {
-      const interval = setInterval(() => {
-        setDisplay(
+      interval = setInterval(() => {
+        setDisplay(prev => 
           text
             .split("")
             .map((letter, index) => {
               if (index < iteration) return text[index];
-              return chars[Math.floor(Math.random() * chars.length)];
+              return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
             })
             .join("")
         );
@@ -41,21 +60,33 @@ export const ScrambleText: React.FC<{ text: string; className?: string; delay?: 
     };
 
     timeout = setTimeout(startScramble, delay);
-    return () => clearTimeout(timeout);
+    
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [text, delay]);
 
   return <span className={`font-mono ${className}`}>{display}</span>;
-};
+});
+
+ScrambleText.displayName = 'ScrambleText';
 
 // --- Container ---
-export const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
+export const Container: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = "" }) => (
   <div className={`max-w-[1280px] mx-auto px-6 md:px-12 ${className}`}>
     {children}
   </div>
 );
 
 // --- Reveal (Lazy Load Animation) ---
-export const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ 
+interface RevealProps {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+}
+
+export const Reveal: React.FC<RevealProps> = ({ 
   children, 
   className = "", 
   delay = 0 
@@ -64,6 +95,9 @@ export const Reveal: React.FC<{ children: React.ReactNode; className?: string; d
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentRef = ref.current;
+    if (!currentRef) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -73,14 +107,15 @@ export const Reveal: React.FC<{ children: React.ReactNode; className?: string; d
       },
       { threshold: 0.1, rootMargin: "50px" }
     );
-    if (ref.current) observer.observe(ref.current);
+
+    observer.observe(currentRef);
     return () => observer.disconnect();
   }, []);
 
   return (
     <div 
       ref={ref} 
-      className={`transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1) ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${className}`}
+      className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
@@ -90,7 +125,7 @@ export const Reveal: React.FC<{ children: React.ReactNode; className?: string; d
 
 // --- Tech Panel (Card) ---
 interface TechPanelProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   title?: string;
   noBorder?: boolean;
@@ -101,7 +136,7 @@ export const TechPanel: React.FC<TechPanelProps> = ({ children, className = '', 
     <div className={`relative bg-offblack/40 ${!noBorder ? 'border border-white/5' : ''} ${className} group overflow-hidden`}>
       {/* Subtle corner markers */}
       {!noBorder && (
-        <>
+        <div className="pointer-events-none" aria-hidden="true">
           <div className="absolute top-0 left-0 w-px h-2 bg-white/20"></div>
           <div className="absolute top-0 left-0 w-2 h-px bg-white/20"></div>
           <div className="absolute top-0 right-0 w-px h-2 bg-white/20"></div>
@@ -110,7 +145,7 @@ export const TechPanel: React.FC<TechPanelProps> = ({ children, className = '', 
           <div className="absolute bottom-0 left-0 w-2 h-px bg-white/20"></div>
           <div className="absolute bottom-0 right-0 w-px h-2 bg-white/20"></div>
           <div className="absolute bottom-0 right-0 w-2 h-px bg-white/20"></div>
-        </>
+        </div>
       )}
       
       {title && (
@@ -127,11 +162,11 @@ export const TechPanel: React.FC<TechPanelProps> = ({ children, className = '', 
 };
 
 // --- Spotlight Card (Performance Optimized) ---
-export const SpotlightCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => {
+export const SpotlightCard: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = "" }) => {
     const divRef = useRef<HTMLDivElement>(null);
     const [opacity, setOpacity] = useState(0);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (!divRef.current) return;
         const rect = divRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -139,10 +174,10 @@ export const SpotlightCard: React.FC<{ children: React.ReactNode; className?: st
         
         divRef.current.style.setProperty("--mouse-x", `${x}px`);
         divRef.current.style.setProperty("--mouse-y", `${y}px`);
-    };
+    }, []);
 
-    const handleMouseEnter = () => setOpacity(1);
-    const handleMouseLeave = () => setOpacity(0);
+    const handleMouseEnter = useCallback(() => setOpacity(1), []);
+    const handleMouseLeave = useCallback(() => setOpacity(0), []);
 
     return (
         <div
@@ -153,44 +188,41 @@ export const SpotlightCard: React.FC<{ children: React.ReactNode; className?: st
             className={`relative overflow-hidden border border-white/10 bg-black ${className}`}
         >
             <div
-                className="pointer-events-none absolute -inset-px transition duration-300"
+                className="pointer-events-none absolute -inset-px transition duration-300 z-0"
                 style={{
                     opacity,
                     background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(255,255,255,0.06), transparent 40%)`,
                 }}
+                aria-hidden="true"
             />
-            {children}
+            <div className="relative z-10">
+                {children}
+            </div>
         </div>
     );
 };
 
-
 // --- Button ---
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   isLoading?: boolean;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ 
   children, 
   variant = ButtonVariant.PRIMARY, 
   className = '', 
-  isLoading, 
+  isLoading = false, 
   icon,
+  disabled,
   ...props 
-}) => {
-  const baseStyles = "inline-flex items-center justify-center px-8 py-4 text-sm transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed tracking-widest font-mono uppercase border group relative overflow-hidden";
-  
-  const variants = {
-    [ButtonVariant.PRIMARY]: "bg-white text-black border-white hover:bg-transparent hover:text-white",
-    [ButtonVariant.SECONDARY]: "bg-transparent border-border text-muted hover:border-white hover:text-white",
-    [ButtonVariant.TERTIARY]: "bg-transparent border-transparent text-muted hover:text-white px-0 py-1 underline-offset-4 hover:underline",
-  };
-
+}, ref) => {
   return (
     <button 
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      ref={ref}
+      className={`${BUTTON_BASE_STYLES} ${BUTTON_VARIANTS[variant]} ${className}`}
+      disabled={disabled || isLoading}
       {...props}
     >
       <span className="relative z-10 flex items-center">
@@ -200,11 +232,13 @@ export const Button: React.FC<ButtonProps> = ({
       </span>
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 // --- Section ---
 interface SectionProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   id?: string;
   grid?: boolean;
@@ -218,7 +252,9 @@ export const Section: React.FC<SectionProps> = ({ children, className = '', id, 
               style={{ 
                 backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', 
                 backgroundSize: '60px 60px' 
-              }}>
+              }}
+              aria-hidden="true"
+         >
          </div>
        )}
       <Container className="relative z-10">
@@ -231,7 +267,7 @@ export const Section: React.FC<SectionProps> = ({ children, className = '', id, 
 // --- Grid Pattern ---
 export const GridPattern: React.FC<{ className?: string }> = ({ className = "" }) => {
   return (
-    <div className={`absolute inset-0 pointer-events-none ${className}`}>
+    <div className={`absolute inset-0 pointer-events-none ${className}`} aria-hidden="true">
       <div className="absolute inset-0 opacity-5" 
           style={{ 
             backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)', 
@@ -245,7 +281,7 @@ export const GridPattern: React.FC<{ className?: string }> = ({ className = "" }
 // --- Dither Grid ---
 export const DitherGrid: React.FC<{ className?: string }> = ({ className = "" }) => {
   return (
-    <div className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className}`}>
+    <div className={`absolute inset-0 z-0 overflow-hidden pointer-events-none ${className}`} aria-hidden="true">
       <div className="absolute inset-0 opacity-[0.05]"
            style={{
              backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
@@ -257,11 +293,14 @@ export const DitherGrid: React.FC<{ className?: string }> = ({ className = "" })
 };
 
 // --- Enhanced Dither Globe (ULTRA RAD EDITION) ---
-export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = ({ className = "", scale = 1 }) => {
+export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = memo(({ className = "", scale = 1 }) => {
+  const sizeStyle: CSSProperties = { width: `${500 * scale}px`, height: `${500 * scale}px` };
+
   return (
     <div 
         className={`relative flex items-center justify-center select-none pointer-events-none ${className}`}
-        style={{ width: `${500 * scale}px`, height: `${500 * scale}px` }}
+        style={sizeStyle}
+        aria-hidden="true"
     >
       
       {/* Main Globe Container with Mask */}
@@ -330,4 +369,6 @@ export const DitherGlobe: React.FC<{ className?: string, scale?: number }> = ({ 
       <div className="absolute right-0 top-1/2 translate-x-12 -translate-y-1/2 text-white/20 z-0"><Plus size={16} /></div>
     </div>
   );
-};
+});
+
+DitherGlobe.displayName = 'DitherGlobe';

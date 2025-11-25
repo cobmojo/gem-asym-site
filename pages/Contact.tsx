@@ -1,9 +1,117 @@
 
-import React from 'react';
-import { Section, Reveal, Button, DitherGlobe, GridPattern, SpotlightCard, TechPanel, ScrambleText, Container } from '../components/UI';
-import { Mail, MapPin, MessageSquare, ArrowRight, Terminal } from 'lucide-react';
+import React, { FormEvent } from 'react';
+import { Reveal, Button, DitherGlobe, GridPattern, SpotlightCard, TechPanel, ScrambleText, Container } from '../components/UI';
+import { Mail, MapPin, MessageSquare, ArrowRight, Terminal, LucideIcon } from 'lucide-react';
 
+// --- Types ---
+interface ContactChannel {
+  id: string;
+  icon: LucideIcon;
+  title: string;
+  content: React.ReactNode;
+  meta?: string;
+  href?: string;
+}
+
+// --- Constants ---
+const CONTACT_CHANNELS: ContactChannel[] = [
+  {
+    id: 'general',
+    icon: Mail,
+    title: 'General Inquiry',
+    content: 'info@asymmetric.al',
+    meta: 'RESPONSE TIME: ~24HRS',
+    href: 'mailto:info@asymmetric.al'
+  },
+  {
+    id: 'builder',
+    icon: MessageSquare,
+    title: 'Builder Support',
+    content: 'github.com/asymmetric-al',
+    href: 'https://github.com/Asymmetric-al'
+  },
+  {
+    id: 'hq',
+    icon: MapPin,
+    title: 'Global HQ',
+    content: (
+      <>
+        Global Fellowship Inc.<br/>
+        Attn: Asymmetric.al Project<br/>
+        PO Box 1<br/>
+        Meadow Vista, CA 95722
+      </>
+    )
+  }
+];
+
+// --- Sub-Components ---
+
+const ChannelItem: React.FC<{ channel: ContactChannel }> = ({ channel }) => {
+  const Wrapper = channel.href ? 'a' : 'div';
+  const wrapperProps = channel.href ? { 
+    href: channel.href, 
+    className: "group block cursor-pointer",
+    target: channel.href.startsWith('http') ? "_blank" : undefined,
+    rel: channel.href.startsWith('http') ? "noopener noreferrer" : undefined
+  } : { 
+    className: "group" 
+  };
+
+  return (
+    // @ts-ignore - Dynamic component typings can be complex with specific HTML attributes, keeping implementation simple
+    <Wrapper {...wrapperProps}>
+        <div className="flex items-center gap-3 text-white mb-2 group-hover:text-primary transition-colors">
+            <channel.icon size={20} />
+            <h3 className="font-display font-bold text-lg">{channel.title}</h3>
+        </div>
+        <div className="text-sm text-gray-500 font-mono pl-8 mb-2 leading-relaxed">
+            {channel.content}
+        </div>
+        {channel.meta && (
+            <div className="pl-8 text-[10px] text-success uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                {channel.meta}
+            </div>
+        )}
+    </Wrapper>
+  );
+};
+
+interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label: string;
+}
+
+const FormInput: React.FC<FormFieldProps> = ({ label, className = "", ...props }) => (
+    <div className="space-y-2">
+        <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{label}</label>
+        <input 
+            className={`w-full bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20 ${className}`}
+            {...props} 
+        />
+    </div>
+);
+
+interface FormTextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+    label: string;
+}
+
+const FormTextArea: React.FC<FormTextAreaProps> = ({ label, className = "", ...props }) => (
+    <div className="space-y-2">
+        <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">{label}</label>
+        <textarea 
+            className={`w-full bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20 resize-none ${className}`}
+            {...props} 
+        />
+    </div>
+);
+
+// --- Main Component ---
 const Contact: React.FC = () => {
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic here
+  };
+
   return (
     <div className="pt-24 min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
       <GridPattern className="opacity-20 fixed inset-0 z-0" />
@@ -39,41 +147,14 @@ const Contact: React.FC = () => {
                 <Reveal delay={200}>
                     <TechPanel title="CHANNELS" className="bg-black/80 backdrop-blur-md">
                         <div className="space-y-8">
-                            <div className="group cursor-pointer">
-                                <div className="flex items-center gap-3 text-white mb-2 group-hover:text-primary transition-colors">
-                                    <Mail size={20} />
-                                    <h3 className="font-display font-bold text-lg">General Inquiry</h3>
-                                </div>
-                                <p className="text-sm text-gray-500 font-mono pl-8 mb-2">info@asymmetric.al</p>
-                                <div className="pl-8 text-[10px] text-success uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                    RESPONSE TIME: ~24HRS
-                                </div>
-                            </div>
-
-                            <div className="w-full h-px bg-white/10"></div>
-
-                            <div className="group cursor-pointer">
-                                <div className="flex items-center gap-3 text-white mb-2 group-hover:text-primary transition-colors">
-                                    <MessageSquare size={20} />
-                                    <h3 className="font-display font-bold text-lg">Builder Support</h3>
-                                </div>
-                                <p className="text-sm text-gray-500 font-mono pl-8 mb-2">github.com/asymmetric-al</p>
-                            </div>
-
-                            <div className="w-full h-px bg-white/10"></div>
-
-                            <div className="group">
-                                <div className="flex items-center gap-3 text-white mb-2">
-                                    <MapPin size={20} />
-                                    <h3 className="font-display font-bold text-lg">Global HQ</h3>
-                                </div>
-                                <p className="text-sm text-gray-500 font-mono pl-8 leading-relaxed">
-                                    Global Fellowship Inc.<br/>
-                                    Attn: Asymmetric.al Project<br/>
-                                    PO Box 1<br/>
-                                    Meadow Vista, CA 95722
-                                </p>
-                            </div>
+                            {CONTACT_CHANNELS.map((channel, index) => (
+                                <React.Fragment key={channel.id}>
+                                    <ChannelItem channel={channel} />
+                                    {index < CONTACT_CHANNELS.length - 1 && (
+                                        <div className="w-full h-px bg-white/10"></div>
+                                    )}
+                                </React.Fragment>
+                            ))}
                         </div>
                     </TechPanel>
                 </Reveal>
@@ -89,29 +170,40 @@ const Contact: React.FC = () => {
                                 <span className="font-mono text-xs uppercase tracking-widest">Transmission Uplink</span>
                             </div>
 
-                            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                            <form className="space-y-6" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Identity // Name</label>
-                                        <input type="text" className="w-full bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20" placeholder="H. TAYLOR" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Identity // Email</label>
-                                        <input type="email" className="w-full bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20" placeholder="CONTACT@ORG.COM" />
-                                    </div>
+                                    <FormInput 
+                                        label="Identity // Name" 
+                                        type="text" 
+                                        placeholder="H. TAYLOR" 
+                                        name="name"
+                                        autoComplete="name"
+                                    />
+                                    <FormInput 
+                                        label="Identity // Email" 
+                                        type="email" 
+                                        placeholder="CONTACT@ORG.COM" 
+                                        name="email"
+                                        autoComplete="email"
+                                    />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Context // Organization</label>
-                                    <input type="text" className="w-full bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20" placeholder="GLOBAL MISSIONS INC." />
-                                </div>
+                                <FormInput 
+                                    label="Context // Organization" 
+                                    type="text" 
+                                    placeholder="GLOBAL MISSIONS INC." 
+                                    name="organization"
+                                    autoComplete="organization"
+                                />
 
-                                <div className="space-y-2">
-                                    <label className="font-mono text-[10px] uppercase tracking-widest text-gray-500">Payload // Message</label>
-                                    <textarea className="w-full h-32 bg-white/5 border border-white/10 p-4 text-white font-mono text-sm focus:border-primary focus:bg-white/10 outline-none transition-all placeholder:text-white/20 resize-none" placeholder="BRIEFING DETAILS..."></textarea>
-                                </div>
+                                <FormTextArea 
+                                    label="Payload // Message" 
+                                    className="h-32" 
+                                    placeholder="BRIEFING DETAILS..." 
+                                    name="message"
+                                />
 
-                                <Button className="w-full py-6 mt-4" icon={<ArrowRight size={16} />}>
+                                <Button className="w-full py-6 mt-4" icon={<ArrowRight size={16} />} type="submit">
                                     Transmit Message
                                 </Button>
                             </form>

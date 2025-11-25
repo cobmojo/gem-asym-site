@@ -1,14 +1,29 @@
 
-import React from 'react';
+import React, { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { Section, Button, Reveal, DitherGrid, DitherGlobe, SpotlightCard, Container, ScrambleText } from '../components/UI';
 import { ButtonVariant } from '../types';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Terminal, Activity, Lock, Scale, Clock, Globe, Code } from 'lucide-react';
+import { ArrowRight, Terminal, Activity, Lock, Scale, Clock, Globe, Code, LucideIcon } from 'lucide-react';
 
-// --- Static Data (Extracted for Performance) ---
-const TICKER_TEXT = Array(8).fill("Unified Operating System // Accelerating the Great Commission // Open Source Core // Hiring Builders // Soli Deo Gloria // Zero Admin Drag // ");
+// --- Types ---
 
-const PHILOSOPHY_CARDS = [
+interface PhilosophyItem {
+  title: string;
+  desc: string;
+}
+
+interface FeatureItem {
+  icon: LucideIcon;
+  title: string;
+  meta: string;
+}
+
+// --- Static Data ---
+
+const TICKER_STRING = "Unified Operating System // Accelerating the Great Commission // Open Source Core // Hiring Builders // Soli Deo Gloria // Zero Admin Drag // ";
+const TICKER_TEXT = Array(8).fill(TICKER_STRING);
+
+const PHILOSOPHY_CARDS: readonly PhilosophyItem[] = [
     { 
         title: "Unified Surface", 
         desc: "One login for finance, mobilization, and care. No context switching between fragmented tools. Your people stay focused." 
@@ -23,7 +38,7 @@ const PHILOSOPHY_CARDS = [
     }
 ];
 
-const FEATURES_DATA = [
+const FEATURES_DATA: readonly FeatureItem[] = [
     { icon: Terminal, title: "Headless CMS", meta: "Next.js + WP" },
     { icon: Activity, title: "Real-time Data", meta: "TanStack Query" },
     { icon: Lock, title: "Identity", meta: "Keycloak SSO" },
@@ -32,21 +47,14 @@ const FEATURES_DATA = [
     { icon: Globe, title: "Governance", meta: "Audit Logs" }
 ];
 
-const Home: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-black selection:bg-white selection:text-black overflow-x-hidden">
-      
-      {/* Hero Section - Optimized for LCP < 2.0s */}
-      {/* Strategy: Use CSS animations instead of JS 'Reveal' for the Hero text to ensure immediate painting */}
-      <div className="relative min-h-screen flex items-center justify-center isolate overflow-hidden">
+// --- Sub-Components ---
+
+const HeroSection: React.FC = () => (
+    <div className="relative min-h-screen flex items-center justify-center isolate overflow-hidden">
         <DitherGrid />
         
         {/* Layer 0: Background Globe - CSS Containment for Perf */}
-        {/* REMOVED REVEAL WRAPPER TO ENSURE IMMEDIATE VISIBILITY */}
-        {/* Fixed: Removed 'contain: size' which caused 0x0 collapse */}
-        <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-70 scale-50 md:scale-100 pointer-events-none will-change-transform"
-        >
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-70 scale-50 md:scale-100 pointer-events-none will-change-transform">
             <DitherGlobe scale={1.2} />
         </div>
 
@@ -95,22 +103,25 @@ const Home: React.FC = () => {
                 </div>
             </Container>
         </div>
-      </div>
+    </div>
+);
 
-      {/* Stats Ticker - CSS Only Animation with GPU Promotion */}
-      <div 
+const TickerSection: React.FC = memo(() => (
+    <div 
         className="border-y border-white/10 bg-black overflow-hidden py-4 relative z-20"
         style={{ contentVisibility: 'auto' }}
-      >
+        aria-hidden="true"
+    >
         <div className="flex whitespace-nowrap gap-16 animate-[marquee_60s_linear_infinite] hover:[animation-play-state:paused] text-xs font-mono uppercase tracking-widest text-muted opacity-70 cursor-default will-change-transform translate-z-0">
             {TICKER_TEXT.map((text, i) => (
                 <span key={i}>{text}</span>
             ))}
         </div>
-      </div>
+    </div>
+));
 
-      {/* Philosophy Section - 1 -> Infinity (Sticky Layout) */}
-      <Section className="bg-black relative z-10">
+const PhilosophySection: React.FC = () => (
+    <Section className="bg-black relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
             
             {/* Left Column: The Concept (Sticky on Desktop) */}
@@ -156,10 +167,11 @@ const Home: React.FC = () => {
                 ))}
             </div>
         </div>
-      </Section>
+    </Section>
+);
 
-      {/* Feature Grid */}
-      <Section grid className="bg-white/[0.02] border-t border-white/5">
+const FeaturesSection: React.FC = () => (
+    <Section grid className="bg-white/[0.02] border-t border-white/5">
          <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/10 pb-8">
             <Reveal>
                 <h2 className="text-5xl font-display font-bold text-white tracking-tighter">Engineered for Scale</h2>
@@ -183,10 +195,11 @@ const Home: React.FC = () => {
                 </Reveal>
             ))}
          </div>
-      </Section>
+    </Section>
+);
 
-      {/* Recruitment CTA - "The Builders" */}
-      <Section className="relative z-10 border-t border-white/5 bg-offblack/30">
+const RecruitmentSection: React.FC = () => (
+    <Section className="relative z-10 border-t border-white/5 bg-offblack/30">
         <Reveal>
             <div className="flex flex-col md:flex-row items-center justify-between gap-12">
                 <div className="max-w-3xl">
@@ -206,7 +219,7 @@ const Home: React.FC = () => {
                     <Link to="/join">
                         <Button 
                             variant={ButtonVariant.SECONDARY} 
-                            className="border-white text-white hover:bg-white hover:!text-black transition-all duration-300"
+                            className="border-white text-white hover:bg-white hover:!text-black transition-all duration-300 group"
                         >
                             Join the Team <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -214,8 +227,19 @@ const Home: React.FC = () => {
                 </div>
             </div>
         </Reveal>
-      </Section>
+    </Section>
+);
 
+// --- Main Component ---
+
+const Home: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-black selection:bg-white selection:text-black overflow-x-hidden">
+      <HeroSection />
+      <TickerSection />
+      <PhilosophySection />
+      <FeaturesSection />
+      <RecruitmentSection />
     </div>
   );
 };

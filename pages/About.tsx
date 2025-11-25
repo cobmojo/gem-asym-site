@@ -1,18 +1,17 @@
 import React from 'react';
 import { Section, Button, GridPattern } from '../components/UI';
-import { Link } from 'react-router-dom';
 import { ButtonVariant } from '../types';
 
 const About: React.FC = () => {
   return (
-    <div className="pt-20 bg-black min-h-screen">
+    <div className="pt-20 bg-black min-h-screen selection:bg-white selection:text-black">
       {/* Hero */}
       <div className="relative border-b border-white/5">
           <Section>
             <GridPattern className="opacity-30" />
             <div className="max-w-4xl mx-auto text-center relative z-10">
-                <h1 className="text-4xl md:text-6xl font-display font-medium mb-8 text-white">We build for the global Church.</h1>
-                <p className="text-xl text-gray-400 font-light">A product team called to serve missions work with careful, modern tools.</p>
+                <h1 className="text-4xl md:text-6xl font-display font-medium mb-8 text-white tracking-tight">We build for the global Church.</h1>
+                <p className="text-xl text-gray-400 font-light text-balance">A product team called to serve missions work with careful, modern tools.</p>
             </div>
           </Section>
       </div>
@@ -48,11 +47,11 @@ const About: React.FC = () => {
       {/* Stack / Build with us */}
       <Section className="bg-white/[0.02] border-t border-white/5">
         <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-display font-medium mb-6">Join the build</h2>
-            <p className="text-gray-400 mb-8 leading-relaxed">
+            <h2 className="text-3xl font-display font-medium mb-6 tracking-tight">Join the build</h2>
+            <p className="text-gray-400 mb-8 leading-relaxed text-balance">
                 If you want your craft to serve the Church, reach out. We work with Next.js, TypeScript, TanStack, and Headless WordPress.
             </p>
-            <a href="mailto:info@asymmetric.al">
+            <a href="mailto:info@asymmetric.al" aria-label="Apply to build with us">
                 <Button variant={ButtonVariant.SECONDARY}>Apply to build with us</Button>
             </a>
         </div>

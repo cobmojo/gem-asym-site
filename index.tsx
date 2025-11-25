@@ -2,12 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+// Select the DOM container where the React app will attach
+const container = document.getElementById('root');
+
+// Fail fast if the container is missing to prevent silent failures
+if (!container) {
+  throw new Error("Fatal: Could not find root element '#root' to mount React application.");
 }
 
-const root = ReactDOM.createRoot(rootElement);
+// Create a concurrent root for React 18+
+const root = ReactDOM.createRoot(container);
+
+// Render the root component within StrictMode
 root.render(
   <React.StrictMode>
     <App />

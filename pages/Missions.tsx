@@ -1,10 +1,28 @@
 
-import React from 'react';
-import { Section, TechPanel, Reveal, Button, DitherGlobe, SpotlightCard, ScrambleText, Container } from '../components/UI';
-import { Target, Layers, AlertTriangle, ArrowRight, Heart, ShieldAlert, Globe } from 'lucide-react';
+import React, { FormEvent } from 'react';
+import { Section, TechPanel, Reveal, Button, DitherGlobe, SpotlightCard, ScrambleText } from '../components/UI';
+import { Target, Layers, AlertTriangle, ArrowRight, Heart, ShieldAlert, Globe, LucideIcon } from 'lucide-react';
 
-// Static Data
-const WHY_FOCUS_DATA = [
+// --- Types ---
+
+interface FocusPoint {
+    title: string;
+    icon: LucideIcon;
+    desc: string;
+}
+
+interface ProblemOption {
+    id: string;
+    title: string;
+    icon: LucideIcon;
+    subtitle: string;
+    desc: string;
+    points: string[];
+}
+
+// --- Static Data ---
+
+const WHY_FOCUS_DATA: readonly FocusPoint[] = [
     {
         title: "Sending is not Selling",
         icon: Target,
@@ -21,6 +39,99 @@ const WHY_FOCUS_DATA = [
         desc: "In an increasingly complex geopolitical landscape, relying on Big Tech for sensitive missionary data is a risk. We build tenant-sovereign architecture where you hold the keys."
     }
 ];
+
+const PROBLEM_OPTIONS: readonly ProblemOption[] = [
+    {
+        id: 'diy',
+        title: "OPTION A: THE DIY TRAP",
+        icon: Layers,
+        subtitle: "The Generic Stack",
+        desc: "Stitching together Salesforce, Mailchimp, QuickBooks, and spreadsheets.",
+        points: ["DATA SILOS", "BROKEN AUTOMATION LINKS", "HIGH SUBSCRIPTION FEES"]
+    },
+    {
+        id: 'legacy',
+        title: "OPTION B: THE LEGACY MONOLITH",
+        icon: Globe,
+        subtitle: "The Outdated Vendor",
+        desc: "Proprietary software built in the early 2000s. Safe, but stagnant.",
+        points: ["VENDOR LOCK-IN", "CLUNKY UX", "SLOW ROADMAPS"]
+    }
+];
+
+// --- Sub-Components ---
+
+const FalseChoicePanel: React.FC<{ option: ProblemOption }> = ({ option }) => (
+    <TechPanel title={option.title} className="bg-black h-full">
+        <div className="mb-4 text-gray-400">
+            <option.icon size={24} className="mb-4 text-gray-600" />
+            <h3 className="text-white font-bold text-lg mb-2">{option.subtitle}</h3>
+            <p className="text-sm leading-relaxed">
+                {option.desc}
+            </p>
+        </div>
+        <ul className="space-y-3 pt-4 border-t border-white/10">
+            {option.points.map((point, i) => (
+                <li key={i} className="text-xs font-mono text-red-400 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-red-500 rounded-full"></span> {point}
+                </li>
+            ))}
+        </ul>
+    </TechPanel>
+);
+
+const FocusCard: React.FC<{ item: FocusPoint }> = ({ item }) => (
+    <SpotlightCard className="h-full p-10 bg-black/80 flex flex-col justify-between group">
+        <div>
+            <item.icon className="text-white mb-6 group-hover:text-primary transition-colors" size={32} strokeWidth={1} />
+            <h3 className="text-2xl font-display font-bold text-white mb-4 tracking-tight">{item.title}</h3>
+            <p className="text-muted leading-relaxed text-sm text-balance border-l border-white/10 pl-4">{item.desc}</p>
+        </div>
+    </SpotlightCard>
+);
+
+const DeploymentForm: React.FC = () => {
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        // Handle form submission logic
+    };
+
+    const inputClasses = "w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors";
+
+    return (
+        <form className="space-y-0 relative group" onSubmit={handleSubmit}>
+            {/* Decorative form border effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-sm blur-sm pointer-events-none"></div>
+            
+            <div className="relative bg-black border border-white/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10">
+                    <div className="bg-black">
+                         <input type="text" placeholder="ORG NAME" className={inputClasses} />
+                    </div>
+                    <div className="bg-black">
+                         <input type="text" placeholder="CONTACT NAME" className={inputClasses} />
+                    </div>
+                </div>
+                <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
+                    <input type="email" placeholder="EMAIL ADDRESS" className={inputClasses} />
+                </div>
+                <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
+                    <textarea 
+                        placeholder="TELL US ABOUT YOUR CURRENT CHALLENGES..." 
+                        className={`${inputClasses} h-40 resize-none`}
+                    />
+                </div>
+                <div className="p-1 bg-white/5">
+                    <Button className="w-full py-6 bg-white text-black hover:bg-primary hover:text-white border-none font-bold" icon={<ArrowRight size={16} />}>
+                        Start the Conversation
+                    </Button>
+                </div>
+            </div>
+        </form>
+    );
+};
+
+// --- Main Component ---
 
 const Missions: React.FC = () => {
   return (
@@ -73,47 +184,9 @@ const Missions: React.FC = () => {
                 </div>
 
                 <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <TechPanel title="OPTION A: THE DIY TRAP" className="bg-black">
-                        <div className="mb-4 text-gray-400">
-                            <Layers size={24} className="mb-4 text-gray-600" />
-                            <h3 className="text-white font-bold text-lg mb-2">The Generic Stack</h3>
-                            <p className="text-sm leading-relaxed">
-                                Stitching together Salesforce, Mailchimp, QuickBooks, and spreadsheets.
-                            </p>
-                        </div>
-                        <ul className="space-y-3 pt-4 border-t border-white/10">
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> DATA SILOS
-                            </li>
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> BROKEN AUTOMATION LINKS
-                            </li>
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> HIGH SUBSCRIPTION FEES
-                            </li>
-                        </ul>
-                    </TechPanel>
-
-                    <TechPanel title="OPTION B: THE LEGACY MONOLITH" className="bg-black">
-                        <div className="mb-4 text-gray-400">
-                            <Globe size={24} className="mb-4 text-gray-600" />
-                            <h3 className="text-white font-bold text-lg mb-2">The Outdated Vendor</h3>
-                            <p className="text-sm leading-relaxed">
-                                Proprietary software built in the early 2000s. Safe, but stagnant.
-                            </p>
-                        </div>
-                        <ul className="space-y-3 pt-4 border-t border-white/10">
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> VENDOR LOCK-IN
-                            </li>
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> CLUNKY UX
-                            </li>
-                            <li className="text-xs font-mono text-red-400 flex items-center gap-2">
-                                <span className="w-1 h-1 bg-red-500"></span> SLOW ROADMAPS
-                            </li>
-                        </ul>
-                    </TechPanel>
+                    {PROBLEM_OPTIONS.map((option) => (
+                        <FalseChoicePanel key={option.id} option={option} />
+                    ))}
                 </div>
             </div>
           </Reveal>
@@ -138,13 +211,7 @@ const Missions: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
             {WHY_FOCUS_DATA.map((item, i) => (
                 <Reveal key={i} delay={i * 100} className="h-full">
-                    <SpotlightCard className="h-full p-10 bg-black/80 flex flex-col justify-between">
-                        <div>
-                            <item.icon className="text-white mb-6 group-hover:text-primary transition-colors" size={32} strokeWidth={1} />
-                            <h3 className="text-2xl font-display font-bold text-white mb-4 tracking-tight">{item.title}</h3>
-                            <p className="text-muted leading-relaxed text-sm text-balance border-l border-white/10 pl-4">{item.desc}</p>
-                        </div>
-                    </SpotlightCard>
+                    <FocusCard item={item} />
                 </Reveal>
             ))}
         </div>
@@ -164,44 +231,19 @@ const Missions: React.FC = () => {
                 </p>
                 <ul className="space-y-4 font-mono text-xs text-muted uppercase tracking-widest">
                     <li className="flex items-center gap-3">
-                        <span className="w-1 h-1 bg-white"></span> Early Access Program
+                        <span className="w-1 h-1 bg-white rounded-full"></span> Early Access Program
                     </li>
                     <li className="flex items-center gap-3">
-                        <span className="w-1 h-1 bg-white"></span> Data Migration Support
+                        <span className="w-1 h-1 bg-white rounded-full"></span> Data Migration Support
                     </li>
                     <li className="flex items-center gap-3">
-                        <span className="w-1 h-1 bg-white"></span> Open Source Contribution
+                        <span className="w-1 h-1 bg-white rounded-full"></span> Open Source Contribution
                     </li>
                 </ul>
             </Reveal>
             
             <Reveal delay={200}>
-                <form className="space-y-0 relative group" onSubmit={(e) => e.preventDefault()}>
-                    {/* Decorative form border effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-sm blur-sm"></div>
-                    
-                    <div className="relative bg-black border border-white/10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10">
-                            <div className="bg-black">
-                                 <input type="text" placeholder="ORG NAME" className="w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors" />
-                            </div>
-                            <div className="bg-black">
-                                 <input type="text" placeholder="CONTACT NAME" className="w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors" />
-                            </div>
-                        </div>
-                        <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
-                            <input type="email" placeholder="EMAIL ADDRESS" className="w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors" />
-                        </div>
-                        <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
-                            <textarea placeholder="TELL US ABOUT YOUR CURRENT CHALLENGES..." className="w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs h-40 resize-none border-none transition-colors"></textarea>
-                        </div>
-                        <div className="p-1 bg-white/5">
-                            <Button className="w-full py-6 bg-white text-black hover:bg-primary hover:text-white border-none font-bold" icon={<ArrowRight size={16} />}>
-                                Start the Conversation
-                            </Button>
-                        </div>
-                    </div>
-                </form>
+                <DeploymentForm />
             </Reveal>
         </div>
       </Section>

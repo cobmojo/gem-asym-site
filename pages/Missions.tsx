@@ -1,6 +1,6 @@
 
 import React, { FormEvent, memo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
     Section, 
     Reveal, 
@@ -29,30 +29,32 @@ import {
     Share2, 
     MessageSquare,
     Code,
-    LucideIcon
+    type LucideIcon
 } from 'lucide-react';
 import { ButtonVariant } from '../types';
 
 // --- Types ---
 
 interface ChallengeItem {
-    title: string;
-    icon: LucideIcon;
-    desc: string;
+    readonly title: string;
+    readonly icon: LucideIcon;
+    readonly desc: string;
 }
 
 interface ServantRole {
-    role: string;
-    icon: LucideIcon;
-    desc: string;
+    readonly role: string;
+    readonly icon: LucideIcon;
+    readonly desc: string;
 }
 
 interface FeaturePoint {
-    title: string;
-    desc: string;
+    readonly title: string;
+    readonly desc: string;
 }
 
-// --- Static Data ---
+// --- Constants & Static Data ---
+
+const FORM_INPUT_CLASSES = "w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors";
 
 const UNIQUE_CHALLENGES: readonly ChallengeItem[] = [
     {
@@ -95,7 +97,7 @@ const SERVANT_ROLES: readonly ServantRole[] = [
     },
     {
         role: "For Donors & Sending Churches",
-        icon: Briefcase, // Representing the partnership
+        icon: Briefcase,
         desc: "Your partners want clarity and connection, not just tax receipts. We give them clean portals to see their giving, update cards, download statements, and hear from the missionaries they love, so they stay engaged for the long haul."
     }
 ];
@@ -110,50 +112,67 @@ const FOCUS_POINTS: readonly FeaturePoint[] = [
 
 // --- Sub-Components ---
 
-const HeroSection = memo(() => (
-    <Section className="relative border-b border-white/5 pb-24">
-        {/* Globe Effect */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-30 pointer-events-none hidden lg:block z-0 mix-blend-screen">
-             <DitherGlobe scale={1.5} />
-        </div>
+const HeroSection = memo(() => {
+    const navigate = useNavigate();
 
-        <div className="max-w-4xl relative z-10">
-            <Reveal>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/10 bg-white/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-muted mb-8 backdrop-blur-md">
-                    <span className="w-1.5 h-1.5 bg-success rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                    <ScrambleText text="THE UNDERSERVED SECTOR" delay={200} />
-                </div>
+    const scrollToContact = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
 
-                <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-8 leading-[0.9] tracking-tighter text-balance">
-                    The frontier deserves<br/>
-                    world-class tools.
-                </h1>
-                
-                <div className="border-l-2 border-white/10 pl-8 mb-12">
-                    <p className="text-xl text-gray-300 max-w-2xl font-light leading-relaxed text-balance mb-6">
-                        Global missions is the most important work on earth. The tools behind it shouldn’t feel like an afterthought. We exist to serve one thing: getting the gospel to people who have never heard the name of Jesus.
-                    </p>
-                    <p className="text-lg text-gray-500 max-w-2xl font-light leading-relaxed text-balance">
-                        Let's close the gap between silicon valley innovation and the Great Commission.
-                    </p>
-                </div>
+    const goToProduct = useCallback(() => {
+        navigate('/product');
+    }, [navigate]);
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <a href="#contact">
-                        <Button variant={ButtonVariant.PRIMARY} icon={<ArrowRight size={16} />}>
+    return (
+        <Section className="relative border-b border-white/5 pb-24">
+            {/* Globe Effect - Rendered only on large screens to save resources */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-30 pointer-events-none hidden lg:block z-0 mix-blend-screen" aria-hidden="true">
+                <DitherGlobe scale={1.5} />
+            </div>
+
+            <div className="max-w-4xl relative z-10">
+                <Reveal>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/10 bg-white/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-muted mb-8 backdrop-blur-md">
+                        <span className="w-1.5 h-1.5 bg-success rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                        <ScrambleText text="THE UNDERSERVED SECTOR" delay={200} />
+                    </div>
+
+                    <h1 className="text-6xl md:text-8xl font-display font-bold text-white mb-8 leading-[0.9] tracking-tighter text-balance">
+                        The frontier deserves<br/>
+                        world-class tools.
+                    </h1>
+                    
+                    <div className="border-l-2 border-white/10 pl-8 mb-12">
+                        <p className="text-xl text-gray-300 max-w-2xl font-light leading-relaxed text-balance mb-6">
+                            Global missions is the most important work on earth. The tools behind it shouldn’t feel like an afterthought. We exist to serve one thing: getting the gospel to people who have never heard the name of Jesus.
+                        </p>
+                        <p className="text-lg text-gray-500 max-w-2xl font-light leading-relaxed text-balance">
+                            Let's close the gap between silicon valley innovation and the Great Commission.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button 
+                            variant={ButtonVariant.PRIMARY} 
+                            icon={<ArrowRight size={16} />} 
+                            onClick={scrollToContact}
+                        >
                             Start the Conversation
                         </Button>
-                    </a>
-                    <Link to="/product">
-                        <Button variant={ButtonVariant.SECONDARY}>
+                        <Button 
+                            variant={ButtonVariant.SECONDARY} 
+                            onClick={goToProduct}
+                        >
                             Learn how the platform works
                         </Button>
-                    </Link>
-                </div>
-            </Reveal>
-        </div>
-    </Section>
-));
+                    </div>
+                </Reveal>
+            </div>
+        </Section>
+    );
+});
+HeroSection.displayName = 'HeroSection';
 
 const WhyMissionsOnly = memo(() => (
     <Section className="bg-offblack/30 relative">
@@ -187,10 +206,24 @@ const WhyMissionsOnly = memo(() => (
         </Reveal>
     </Section>
 ));
+WhyMissionsOnly.displayName = 'WhyMissionsOnly';
+
+const ChallengeCard = memo(({ item }: { readonly item: ChallengeItem }) => (
+    <SpotlightCard className="h-full bg-white/[0.02] border-white/10 p-8 flex flex-col group">
+        <div className="mb-6 p-3 bg-white/5 w-fit rounded-sm border border-white/10 group-hover:border-primary/50 group-hover:text-primary transition-colors">
+            <item.icon size={24} strokeWidth={1.5} />
+        </div>
+        <h3 className="text-xl font-display font-bold text-white mb-4">{item.title}</h3>
+        <p className="text-sm text-gray-400 leading-relaxed text-balance font-light">
+            {item.desc}
+        </p>
+    </SpotlightCard>
+));
+ChallengeCard.displayName = 'ChallengeCard';
 
 const NotGenericSection = memo(() => (
     <Section grid className="bg-black relative overflow-hidden border-t border-white/5">
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute inset-0 opacity-20 pointer-events-none" aria-hidden="true">
             <DitherGrid />
         </div>
 
@@ -206,21 +239,35 @@ const NotGenericSection = memo(() => (
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {UNIQUE_CHALLENGES.map((item, i) => (
-                        <SpotlightCard key={i} className="h-full bg-white/[0.02] border-white/10 p-8 flex flex-col group">
-                            <div className="mb-6 p-3 bg-white/5 w-fit rounded-sm border border-white/10 group-hover:border-primary/50 group-hover:text-primary transition-colors">
-                                <item.icon size={24} strokeWidth={1.5} />
-                            </div>
-                            <h3 className="text-xl font-display font-bold text-white mb-4">{item.title}</h3>
-                            <p className="text-sm text-gray-400 leading-relaxed text-balance font-light">
-                                {item.desc}
-                            </p>
-                        </SpotlightCard>
+                        <ChallengeCard key={i} item={item} />
                     ))}
                 </div>
             </Reveal>
         </Container>
     </Section>
 ));
+NotGenericSection.displayName = 'NotGenericSection';
+
+const ServantRoleCard = memo(({ role }: { readonly role: ServantRole }) => (
+    <div className="group relative overflow-hidden bg-white/[0.01] border border-white/5 hover:border-white/20 transition-all duration-500 rounded-sm">
+        <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" aria-hidden="true" />
+        
+        <div className="relative z-10 p-8 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-4 flex items-center gap-4">
+                <div className="p-3 bg-black border border-white/10 rounded-full text-gray-400 group-hover:text-white group-hover:border-white/40 transition-all">
+                    <role.icon size={20} />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-white">{role.role}</h3>
+            </div>
+            <div className="lg:col-span-8">
+                <p className="text-gray-400 font-light leading-relaxed group-hover:text-gray-300 transition-colors">
+                    {role.desc}
+                </p>
+            </div>
+        </div>
+    </div>
+));
+ServantRoleCard.displayName = 'ServantRoleCard';
 
 const ServeTheServants = memo(() => (
     <Section className="bg-offblack/50 border-y border-white/5">
@@ -245,28 +292,24 @@ const ServeTheServants = memo(() => (
 
              <div className="space-y-4">
                  {SERVANT_ROLES.map((role, i) => (
-                     <div key={i} className="group relative overflow-hidden bg-white/[0.01] border border-white/5 hover:border-white/20 transition-all duration-500 rounded-sm">
-                         <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                         
-                         <div className="relative z-10 p-8 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                             <div className="lg:col-span-4 flex items-center gap-4">
-                                 <div className="p-3 bg-black border border-white/10 rounded-full text-gray-400 group-hover:text-white group-hover:border-white/40 transition-all">
-                                     <role.icon size={20} />
-                                 </div>
-                                 <h3 className="text-2xl font-display font-bold text-white">{role.role}</h3>
-                             </div>
-                             <div className="lg:col-span-8">
-                                 <p className="text-gray-400 font-light leading-relaxed group-hover:text-gray-300 transition-colors">
-                                     {role.desc}
-                                 </p>
-                             </div>
-                         </div>
-                     </div>
+                     <ServantRoleCard key={i} role={role} />
                  ))}
              </div>
         </Reveal>
     </Section>
 ));
+ServeTheServants.displayName = 'ServeTheServants';
+
+const FeatureRow = memo(({ item, index }: { readonly item: FeaturePoint; readonly index: number }) => (
+    <div className="flex gap-6 py-8 border-b border-white/5 group">
+        <div className="font-mono text-xs text-muted pt-1">{(index + 1).toString().padStart(2, '0')}</div>
+        <div>
+            <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">{item.title}</h4>
+            <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+        </div>
+    </div>
+));
+FeatureRow.displayName = 'FeatureRow';
 
 const WhatFocusChanges = memo(() => (
     <Section className="relative z-10">
@@ -291,23 +334,19 @@ const WhatFocusChanges = memo(() => (
 
                 <div className="space-y-0">
                     {FOCUS_POINTS.map((pt, i) => (
-                        <div key={i} className="flex gap-6 py-8 border-b border-white/5 group">
-                            <div className="font-mono text-xs text-muted pt-1">{(i + 1).toString().padStart(2, '0')}</div>
-                            <div>
-                                <h4 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">{pt.title}</h4>
-                                <p className="text-gray-500 text-sm leading-relaxed">{pt.desc}</p>
-                            </div>
-                        </div>
+                        <FeatureRow key={i} item={pt} index={i} />
                     ))}
                 </div>
             </div>
         </Reveal>
     </Section>
 ));
+WhatFocusChanges.displayName = 'WhatFocusChanges';
 
 const OriginStory = memo(() => (
     <Section className="bg-offblack text-center border-y border-white/5 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        {/* Background Ambience */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
         
         <Container className="relative z-10 max-w-3xl">
             <Reveal>
@@ -341,6 +380,7 @@ const OriginStory = memo(() => (
         </Container>
     </Section>
 ));
+OriginStory.displayName = 'OriginStory';
 
 const OpenProjectSection = memo(() => (
     <Section className="relative z-10">
@@ -397,14 +437,13 @@ const OpenProjectSection = memo(() => (
         </Reveal>
     </Section>
 ));
+OpenProjectSection.displayName = 'OpenProjectSection';
 
 const ContactSection = memo(() => {
     const handleSubmit = useCallback((e: FormEvent) => {
         e.preventDefault();
         // Handle logic
     }, []);
-
-    const inputClasses = "w-full bg-transparent p-6 text-white placeholder-muted/40 focus:bg-white/[0.02] focus:outline-none font-mono text-xs border-none transition-colors";
 
     return (
         <Section id="contact" className="bg-white/[0.02] border-t border-white/5">
@@ -444,24 +483,25 @@ const ContactSection = memo(() => {
                     <div>
                         <form className="space-y-0 relative group shadow-2xl" onSubmit={handleSubmit}>
                             {/* Decorative form border effect */}
-                            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-sm blur-sm pointer-events-none" />
+                            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-sm blur-sm pointer-events-none" aria-hidden="true" />
                             
                             <div className="relative bg-black border border-white/10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10">
                                     <div className="bg-black">
-                                        <input type="text" placeholder="ORG NAME" className={inputClasses} />
+                                        <input type="text" placeholder="ORG NAME" className={FORM_INPUT_CLASSES} aria-label="Organization Name" />
                                     </div>
                                     <div className="bg-black">
-                                        <input type="text" placeholder="CONTACT NAME" className={inputClasses} />
+                                        <input type="text" placeholder="CONTACT NAME" className={FORM_INPUT_CLASSES} aria-label="Contact Name" />
                                     </div>
                                 </div>
                                 <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
-                                    <input type="email" placeholder="EMAIL ADDRESS" className={inputClasses} />
+                                    <input type="email" placeholder="EMAIL ADDRESS" className={FORM_INPUT_CLASSES} aria-label="Email Address" />
                                 </div>
                                 <div className="gap-px bg-white/10 border-t border-white/10 bg-black">
                                     <textarea 
                                         placeholder="SHARE A BIT ABOUT YOUR AGENCY, CURRENT TOOLS, AND PAIN POINTS..." 
-                                        className={`${inputClasses} h-40 resize-none`}
+                                        className={`${FORM_INPUT_CLASSES} h-40 resize-none`}
+                                        aria-label="Message"
                                     />
                                 </div>
                                 <div className="p-1 bg-white/5">
@@ -480,6 +520,7 @@ const ContactSection = memo(() => {
         </Section>
     );
 });
+ContactSection.displayName = 'ContactSection';
 
 // --- Main Component ---
 

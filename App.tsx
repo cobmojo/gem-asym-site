@@ -1,8 +1,8 @@
-
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, type ErrorInfo, type ReactNode } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle, RefreshCcw } from 'lucide-react';
 import { Navbar, Footer } from './components/Layout';
+import { Button } from './components/UI';
 
 // --- Lazy Load Pages ---
 
@@ -32,13 +32,23 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 /**
  * ScrollToTop
  * Resets the window scroll position to (0,0) whenever the route pathname changes.
- * Ensures users start at the top of the page when navigating between views.
+ * Uses 'instant' behavior to override global smooth-scroll for page transitions.
  */
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Disable smooth scrolling temporarily for instant page transition
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    
+    // Re-enable smooth scrolling after a small tick
+    // This ensures anchor links on the new page work smoothly
+    const timeout = setTimeout(() => {
+      document.documentElement.style.scrollBehavior = '';
+    }, 100);
+
+    return () => clearTimeout(timeout);
   }, [pathname]);
 
   return null;
@@ -47,15 +57,78 @@ const ScrollToTop: React.FC = () => {
 /**
  * LoadingFallback
  * A centered, minimal spinner displayed within the main content area while 
- * code chunks are legally loading via Suspense.
+ * code chunks are loading via Suspense.
  */
 const LoadingFallback: React.FC = () => (
   <div 
-    className="flex items-center justify-center min-h-[50vh] pt-24 text-white/20" 
+    className="flex items-center justify-center min-h-[60vh] text-white/20 animate-pulse" 
     aria-label="Loading content..."
     role="status"
   >
-    <Loader2 className="w-6 h-6 animate-spin" />
+    <Loader2 className="w-8 h-8 animate-spin" />
+  </div>
+);
+
+/**
+ * ErrorBoundary
+ * Catches rendering errors in child components (like lazy load failures).
+ */
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo);
+  }
+
+  handleReload = () => {
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
+          <div className="p-4 bg-red-500/10 rounded-full mb-6 text-red-500 border border-red-500/20">
+            <AlertTriangle size={32} />
+          </div>
+          <h2 className="text-2xl font-display font-bold text-white mb-2">System Anomaly Detected</h2>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto text-balance">
+            The application encountered an unexpected error. This may be due to a network interruption or a stale deployment cache.
+          </p>
+          <Button onClick={this.handleReload} icon={<RefreshCcw size={16} />}>
+            Reload Application
+          </Button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// --- Layout Wrapper ---
+
+const AppLayout: React.FC<{ children: ReactNode }> = ({ children }) => (
+  <div className="flex flex-col min-h-screen bg-black text-white font-sans antialiased selection:bg-white selection:text-black">
+    <ScrollToTop />
+    <Navbar />
+    <main className="flex-grow relative w-full isolate">
+      {children}
+    </main>
+    <Footer />
   </div>
 );
 
@@ -64,17 +137,8 @@ const LoadingFallback: React.FC = () => (
 const App: React.FC = () => {
   return (
     <HashRouter>
-      {/* Global Wrapper: Handles sticky footer and global selection styles */}
-      <div className="flex flex-col min-h-screen bg-black text-white font-sans antialiased selection:bg-white selection:text-black">
-        
-        {/* Navigation Utilities */}
-        <ScrollToTop />
-        
-        {/* Global Navigation */}
-        <Navbar />
-        
-        {/* Main Content Area */}
-        <main className="flex-grow relative w-full">
+      <AppLayout>
+        <ErrorBoundary>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               {/* --- Landing --- */}
@@ -101,11 +165,8 @@ const App: React.FC = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </main>
-        
-        {/* Global Footer */}
-        <Footer />
-      </div>
+        </ErrorBoundary>
+      </AppLayout>
     </HashRouter>
   );
 };

@@ -56,7 +56,7 @@ const MobileNavOverlay: React.FC<{ readonly isOpen: boolean }> = memo(({ isOpen 
 
   return (
     <div 
-      className="fixed inset-0 bg-background/95 backdrop-blur-xl z-40 flex flex-col justify-center px-8 animate-fade-in" 
+      className="fixed inset-0 bg-background/95 backdrop-blur-xl z-0 flex flex-col justify-center px-8 animate-fade-in" 
       role="dialog"
       aria-modal="true"
       aria-label="Mobile Navigation"
